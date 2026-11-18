@@ -1,0 +1,12 @@
+# hwdiag: firmware chẩn đoán phần cứng hộp node (INA219, LDR). Không dùng BLE.
+cmake_minimum_required(VERSION 3.13)
+set(CMAKE_C_STANDARD 11)
+set(PICO_BOARD pico2_w CACHE STRING "Board type")
+include(pico_sdk_import.cmake)
+project(hwdiag C CXX ASM)
+pico_sdk_init()
+add_executable(hwdiag hwdiag.c)
+target_link_libraries(hwdiag pico_stdlib hardware_adc hardware_i2c pico_cyw43_arch_none)
+pico_enable_stdio_usb(hwdiag 1)
+pico_enable_stdio_uart(hwdiag 0)
+pico_add_extra_outputs(hwdiag)
