@@ -2,7 +2,7 @@
 
 A four-board wireless sensor network built on Raspberry Pi Pico 2 W (RP2350 + CYW43439) using Bluetooth Low Energy only. Sensor nodes forward data to a Root node over up to three hops, every packet is acknowledged end-to-end by the Root, and nodes find a new route on their own when a link or a parent node disappears.
 
-This is the follow-up to my ESP32 prototype, [ble-sensor-network](https://github.com/menvo-embedded/ble-sensor-network), which had one sensor, one relay and hop-by-hop acknowledgements.
+This is the follow-up to my ESP32 prototype, [ble-sensor-network](https://github.com/menvo-info/ble-sensor-network), which had one sensor, one relay and hop-by-hop acknowledgements.
 
 ![Real-time dashboard during the MESH rerouting experiment](docs/images/dashboard-e9-mesh.png)
 
