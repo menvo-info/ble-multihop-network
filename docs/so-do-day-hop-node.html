@@ -1,0 +1,527 @@
+<title>Đi dây hộp node Pico 2 W</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: bench-mat diagram on top (fixed light canvas, real wire colours), wire legend + checklist below in two columns. */
+:root {
+  --bg: #f2f4ef;
+  --surface: #ffffff;
+  --fg: #16201a;
+  --muted: #59695e;
+  --line: #d5ddd3;
+  --accent: #1f6f4a;
+  --warn-bg: #fff4dc;
+  --warn-fg: #6b4a00;
+  --canvas: #fbfbf6;
+  --canvas-dot: #e3e6dc;
+  --font-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+    --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+  --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.page { max-width: 1120px; margin: 0 auto; display: grid; gap: 24px; }
+header h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 6px; font-weight: 700; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 68ch; }
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+
+.bench {
+  background: var(--canvas);
+  background-image: radial-gradient(var(--canvas-dot) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.bench svg { display: block; width: 100%; max-width: 980px; min-width: 700px; height: auto; margin: 0 auto; }
+.bench-note { font-size: .85rem; color: var(--muted); margin: 8px 2px 0; }
+.bench svg.mirror { transform: scaleX(-1); }
+.bench svg.mirror text { transform-box: fill-box; transform-origin: center; transform: scaleX(-1); }
+.viewbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.viewbar button {
+  font: inherit; font-size: .9rem; cursor: pointer; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg);
+}
+.viewbar button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--surface); }
+.viewbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+svg text { font-family: var(--font-mono); }
+.wire path { fill: none; stroke-linecap: round; stroke-linejoin: round; transition: opacity .15s; }
+.wire .casing { stroke: rgba(0,0,0,.28); stroke-width: 7; }
+.wire .core { stroke: var(--w); stroke-width: 4.5; }
+.wire .rail { fill: var(--w); stroke: rgba(0,0,0,.35); stroke-width: 1; }
+.wire .hole { fill: rgba(255,255,255,.55); }
+.wire, .wire path { transition: opacity .15s; }
+svg.focus .wire:not(.on) { opacity: .12; }
+svg.focus .wire.on .core { stroke-width: 6; }
+
+.n-red    { --w: #d62828; }
+.n-brown  { --w: #8a5a2b; }
+.n-purple { --w: #8e44ad; }
+.n-pink   { --w: #e8559a; }
+.n-black  { --w: #1d1d1d; }
+.n-orange { --w: #f08a24; }
+.n-blue   { --w: #2f6fd6; }
+.n-yellow { --w: #e8b90c; }
+.n-green  { --w: #2e9e4f; }
+.n-gray   { --w: #8b9196; }
+.n-teal   { --w: #14a3a3; }
+.n-white  { --w: #ffffff; }
+.n-lav    { --w: #b39ddb; }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+
+section h2 { font-size: 1.1rem; margin: 0 0 10px; font-weight: 600; }
+.legend { display: grid; gap: 6px; }
+.legend button {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start;
+  padding: 10px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line);
+}
+.legend button:hover, .legend button[aria-pressed="true"] { border-color: var(--accent); }
+.legend button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sw { width: 34px; height: 10px; margin-top: 7px; border-radius: 5px; background: var(--w); box-shadow: 0 0 0 1px var(--line), inset 0 -2px 0 rgba(0,0,0,.25); }
+.legend b { font-weight: 600; }
+.legend .route { display: block; font-family: var(--font-mono); font-size: .8rem; color: var(--muted); }
+.legend .route + .route { margin-top: 2px; }
+.hint { font-size: .85rem; color: var(--muted); margin: 0 0 10px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.card + .card { margin-top: 16px; }
+ol, ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+.mono { font-family: var(--font-mono); font-size: .85em; }
+.warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 10px; padding: 14px 16px; font-size: .92rem; display: grid; gap: 6px; }
+.warn b { font-weight: 600; }
+.warn p { margin: 0; }
+
+.pinmap { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.pinmap th, .pinmap td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.pinmap th { font-weight: 600; color: var(--muted); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+.pinmap td:first-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.pinmap .chip { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--w); box-shadow: 0 0 0 1px var(--line); margin-right: 6px; vertical-align: -1px; }
+@media (prefers-reduced-motion: reduce) { .wire, .wire path { transition: none; } }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Đồ án 2 · WSN BLE · hộp node A / B / C</div>
+    <h1>Đi dây hộp node Pico 2 W</h1>
+    <p>Hai thanh bus: <b>+3V3</b> và <b>GND</b>. Mọi module lấy nguồn và mass từ bus, dây tín hiệu đi thẳng vào cạnh phải của Pico. Đường pin đi nối tiếp riêng: 18650 → TP4056 → công tắc → INA219 → 1N5819 → VSYS. Bấm hoặc rê chuột vào một dây trong bảng để làm nổi dây đó.</p>
+  </header>
+
+  <div>
+    <div class="viewbar" role="group" aria-label="Hướng nhìn">
+      <button type="button" id="view-top" aria-pressed="true">Mặt trên · lắp linh kiện, cắm breadboard</button>
+      <button type="button" id="view-bottom" aria-pressed="false">Mặt dưới · mặt hàn, giống chữ in dưới Pico</button>
+    </div>
+    <div class="bench">
+      <svg id="dia" viewBox="440 40 780 640" role="img" aria-label="Sơ đồ đi dây có bus +3V3 và GND: pin 18650, TP4056, công tắc, INA219, diode 1N5819, quang trở và Raspberry Pi Pico 2 W">
+        <!-- Pico 2 W board (top view, USB up) -->
+        <g id="pico">
+          <rect x="525" y="58" width="50" height="28" rx="3" fill="#c3c8cc" stroke="#8c9297"/>
+          <text x="550" y="52" fill="#4a5560" font-size="9" text-anchor="middle">USB</text>
+          <rect x="470" y="80" width="160" height="570" rx="7" fill="#2f7a4b" stroke="#1f5733" stroke-width="1.5"/>
+          <rect x="527" y="400" width="46" height="46" rx="3" fill="#1c1f1d"/>
+          <text x="550" y="427" fill="#cfd8d2" font-size="8" text-anchor="middle">RP2350</text>
+          <rect x="522" y="500" width="56" height="50" rx="3" fill="#b9bfc3" stroke="#8c9297"/>
+          <text x="550" y="529" fill="#3b4246" font-size="8" text-anchor="middle">CYW43</text>
+          <rect x="478" y="614" width="144" height="30" rx="4" fill="#3d8c5a" stroke="#cfe6d6" stroke-dasharray="3 3"/>
+          <text x="550" y="633" fill="#e6f3ea" font-size="9" text-anchor="middle">ANTEN · đừng che</text>
+          <g id="pins"></g>
+        </g>
+
+        <!-- INA219 module -->
+        <g>
+          <rect x="800" y="250" width="160" height="130" rx="5" fill="#5b3f8c" stroke="#3e2a63" stroke-width="1.5"/>
+          <rect x="860" y="290" width="36" height="30" rx="2" fill="#1c1a22"/>
+          <text x="878" y="308" fill="#d9d2e8" font-size="7.5" text-anchor="middle">INA219</text>
+          <text x="878" y="336" fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle">INA219</text>
+          <text x="878" y="349" fill="#d9d2e8" font-size="8.5" text-anchor="middle">I2C 0x40 · R100</text>
+          <g fill="#ffffff" font-size="9.5">
+            <text x="830" y="266" text-anchor="middle">VCC</text>
+            <text x="930" y="266" text-anchor="middle">VIN−</text>
+            <text x="810" y="322">SCL</text>
+            <text x="810" y="348">SDA</text>
+            <text x="830" y="372" text-anchor="middle">GND</text>
+            <text x="950" y="319" text-anchor="end">VIN+</text>
+          </g>
+          <g fill="#e2c46b" stroke="#8a6d1c">
+            <circle cx="830" cy="250" r="3.5"/><circle cx="930" cy="250" r="3.5"/>
+            <circle cx="800" cy="318" r="3.5"/><circle cx="800" cy="344" r="3.5"/>
+            <circle cx="830" cy="380" r="3.5"/><circle cx="960" cy="315" r="3.5"/>
+          </g>
+        </g>
+
+        <!-- TP4056 charger, drawn like the real board: USB-C left, pads OUT+ / B+ / B- / OUT- on the right edge -->
+        <g>
+          <rect x="960" y="455" width="150" height="90" rx="5" fill="#1d4f9c" stroke="#123468" stroke-width="1.5"/>
+          <rect x="948" y="486" width="18" height="28" rx="4" fill="#c3c8cc" stroke="#8c9297"/>
+          <text x="957" y="449" fill="#4a5560" font-size="8.5">USB-C sạc</text>
+          <rect x="996" y="460" width="8" height="5" rx="1" fill="#ff4b3e"/>
+          <rect x="1016" y="460" width="8" height="5" rx="1" fill="#3fd47a"/>
+          <text x="1010" y="474" fill="#c8d7f0" font-size="7" text-anchor="middle">đỏ: sạc · xanh: đầy</text>
+          <rect x="992" y="492" width="34" height="24" rx="2" fill="#1c1f24"/>
+          <text x="1009" y="507" fill="#cfd5dd" font-size="7" text-anchor="middle">4056</text>
+          <rect x="1040" y="482" width="16" height="12" rx="1" fill="#1c1f24"/>
+          <text x="1048" y="491" fill="#cfd5dd" font-size="5.5" text-anchor="middle">DW01</text>
+          <rect x="1040" y="502" width="20" height="18" rx="1" fill="#1c1f24"/>
+          <text x="1050" y="513" fill="#cfd5dd" font-size="5.5" text-anchor="middle">8205A</text>
+          <text x="1000" y="539" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">TP4056</text>
+          <g fill="#ffffff" font-size="9" font-weight="700">
+            <text x="1103" y="468" text-anchor="end">OUT+</text>
+            <text x="1103" y="491" text-anchor="end">B+</text>
+            <text x="1103" y="514" text-anchor="end">B−</text>
+            <text x="1103" y="537" text-anchor="end">OUT−</text>
+          </g>
+          <g fill="#9fb3cc" font-size="7">
+            <text x="982" y="470">IN+</text>
+            <text x="982" y="536">IN−</text>
+          </g>
+          <g fill="#e2c46b" stroke="#8a6d1c">
+            <circle cx="1110" cy="465" r="3.5"/><circle cx="1110" cy="488" r="3.5"/>
+            <circle cx="1110" cy="511" r="3.5"/><circle cx="1110" cy="534" r="3.5"/>
+          </g>
+          <g fill="#7f8ea3" stroke="#4b5868">
+            <rect x="972" y="463" width="7" height="7"/><rect x="972" y="529" width="7" height="7"/>
+          </g>
+        </g>
+        <text x="935" y="590" fill="#6b7177" font-size="8">IN+ / IN− để trống, sạc qua USB-C</text>
+
+        <!-- 18650 in holder, standing, + on top -->
+        <g>
+          <rect x="1150" y="455" width="55" height="165" rx="7" fill="#262626"/>
+          <rect x="1160" y="470" width="35" height="138" rx="10" fill="#2a8f84"/>
+          <rect x="1170" y="464" width="15" height="6" rx="1" fill="#c3c8cc"/>
+          <text x="1177" y="488" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">+</text>
+          <text x="1177" y="602" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">−</text>
+          <text x="1177" y="540" fill="#ffffff" font-size="10" font-weight="700" text-anchor="middle" transform="rotate(-90 1177 540)">18650 · 3.0–4.2 V</text>
+        </g>
+
+        <!-- Switch -->
+        <g stroke="#3a3f44" stroke-width="2" fill="#fbfbf6">
+          <line x1="1120" y1="400" x2="1139" y2="357"/>
+          <circle cx="1120" cy="400" r="4"/>
+          <circle cx="1120" cy="350" r="4"/>
+        </g>
+        <text x="1146" y="382" fill="#3a3f44" font-size="10">Công tắc</text>
+
+        <!-- diode label -->
+        <text x="707" y="123" fill="#3a3f44" font-size="9" text-anchor="middle">1N5819</text>
+
+        <!-- Wires and bus rails -->
+        <g class="wire n-red" data-net="red">
+          <path class="casing" d="M1110 488 H1130 V445 H1177 V455 M1110 465 H1120 V400"/>
+          <path class="core" d="M1110 488 H1130 V445 H1177 V455 M1110 465 H1120 V400"/>
+        </g>
+        <g class="wire n-brown" data-net="brown">
+          <path class="casing" d="M960 315 H1120 V350"/>
+          <path class="core" d="M960 315 H1120 V350"/>
+        </g>
+        <g class="wire n-purple" data-net="purple">
+          <path class="casing" d="M721 136 H930 V250"/>
+          <path class="core" d="M721 136 H930 V250"/>
+        </g>
+        <g class="wire n-pink" data-net="pink">
+          <path class="casing" d="M693 136 H630"/>
+          <path class="core" d="M693 136 H630"/>
+        </g>
+        <g class="wire n-black" data-net="black">
+          <path class="casing" d="M1110 511 H1140 V630 H1177 V620 M630 422 H645 M830 380 V414 M1110 534 H1118 V560 H935 V430"/>
+          <path class="core" d="M1110 511 H1140 V630 H1177 V620 M630 422 H645 M830 380 V414 M1110 534 H1118 V560 H935 V430"/>
+          <rect class="rail" x="645" y="414" width="420" height="16" rx="3"/>
+          <g class="hole">
+            <circle cx="680" cy="422" r="2"/><circle cx="700" cy="422" r="2"/><circle cx="720" cy="422" r="2"/><circle cx="740" cy="422" r="2"/>
+            <circle cx="760" cy="422" r="2"/><circle cx="780" cy="422" r="2"/><circle cx="800" cy="422" r="2"/>
+            <circle cx="860" cy="422" r="2"/><circle cx="880" cy="422" r="2"/><circle cx="900" cy="422" r="2"/><circle cx="920" cy="422" r="2"/>
+            <circle cx="940" cy="422" r="2"/><circle cx="960" cy="422" r="2"/><circle cx="980" cy="422" r="2"/><circle cx="1000" cy="422" r="2"/>
+          </g>
+          <text x="652" y="426" fill="#ffffff" font-size="9" font-weight="700">GND −</text>
+        </g>
+        <g class="wire n-orange" data-net="orange">
+          <path class="casing" d="M630 214 H645 M750 222 V226 M830 222 V250"/>
+          <path class="core" d="M630 214 H645 M750 222 V226 M830 222 V250"/>
+          <rect class="rail" x="645" y="206" width="240" height="16" rx="3"/>
+          <g class="hole">
+            <circle cx="770" cy="214" r="2"/><circle cx="790" cy="214" r="2"/><circle cx="810" cy="214" r="2"/>
+            <circle cx="850" cy="214" r="2"/><circle cx="870" cy="214" r="2"/>
+          </g>
+          <text x="652" y="218" fill="#ffffff" font-size="9" font-weight="700">+3V3</text>
+        </g>
+        <g class="wire n-blue" data-net="blue">
+          <path class="casing" d="M630 344 H800"/>
+          <path class="core" d="M630 344 H800"/>
+        </g>
+        <g class="wire n-yellow" data-net="yellow">
+          <path class="casing" d="M630 318 H800"/>
+          <path class="core" d="M630 318 H800"/>
+        </g>
+        <g class="wire n-green" data-net="green">
+          <path class="casing" d="M630 266 H750 M750 258 V292 H720 M645 266 V276"/>
+          <path class="core" d="M630 266 H750 M750 258 V292 H720 M645 266 V276"/>
+          <circle class="rail" cx="750" cy="266" r="5"/>
+          <circle class="rail" cx="645" cy="266" r="4"/>
+        </g>
+        <g class="wire n-gray" data-net="gray">
+          <path class="casing" d="M660 292 H630 M645 282 V292"/>
+          <path class="core" d="M660 292 H630 M645 282 V292"/>
+          <circle class="rail" cx="645" cy="292" r="4"/>
+        </g>
+        <!-- C2: bus +3V3 to bus GND, hops over SCL/SDA -->
+        <g class="wire n-orange" data-net="orange">
+          <path class="casing" d="M780 222 V310 A8 8 0 0 1 780 326 V336 A8 8 0 0 1 780 352 V372"/>
+          <path class="core" d="M780 222 V310 A8 8 0 0 1 780 326 V336 A8 8 0 0 1 780 352 V372"/>
+        </g>
+        <g class="wire n-black" data-net="black">
+          <path class="casing" d="M780 378 V414 M740 370 V414 M760 578 H770 V430 M760 604 H800 V430"/>
+          <path class="core" d="M780 378 V414 M740 370 V414 M760 578 H770 V430 M760 604 H800 V430"/>
+        </g>
+        <g class="wire n-teal" data-net="teal">
+          <path class="casing" d="M630 604 H655 M695 604 H718"/>
+          <path class="core" d="M630 604 H655 M695 604 H718"/>
+        </g>
+        <g class="wire n-white" data-net="white">
+          <path class="casing" d="M630 578 H655 M695 578 H718"/>
+          <path class="core" d="M630 578 H655 M695 578 H718"/>
+        </g>
+        <g class="wire n-lav" data-net="lav">
+          <path class="casing" d="M630 370 H686"/>
+          <path class="core" d="M630 370 H686"/>
+        </g>
+        <g class="wire n-black" data-net="black">
+          <path class="casing" d="M724 370 H740"/>
+          <path class="core" d="M724 370 H740"/>
+        </g>
+
+        <!-- components drawn over wire ends -->
+        <rect x="693" y="129" width="28" height="14" rx="3" fill="#1e1e1e"/>
+        <rect x="696" y="129" width="4" height="14" fill="#cfd3d6"/>
+
+        <rect x="743" y="226" width="14" height="32" rx="3" fill="#fff1cf" stroke="#b08a3a"/>
+        <path d="M750 229 l-4 3 l8 4 l-8 4 l8 4 l-8 4 l8 4 l-4 3" fill="none" stroke="#a0522d" stroke-width="1.4"/>
+        <path d="M770 234 l-10 8 M766 244 l-6 -2 l2 6" fill="none" stroke="#c48a00" stroke-width="1.5"/>
+        <text x="738" y="246" fill="#3a3f44" font-size="9.5" text-anchor="end">Quang trở</text>
+
+        <rect x="660" y="285" width="60" height="14" rx="3" fill="#d9c7a2" stroke="#8a7347"/>
+        <rect x="672" y="285" width="3" height="14" fill="#8a5a2b"/>
+        <rect x="680" y="285" width="3" height="14" fill="#1d1d1d"/>
+        <rect x="688" y="285" width="3" height="14" fill="#f08a24"/>
+        <text x="690" y="310" fill="#3a3f44" font-size="9" text-anchor="middle">10 kΩ</text>
+
+        <!-- C1 100 nF: GP28 to AGND -->
+        <g stroke="#2b2f33" stroke-width="2.5" stroke-linecap="round">
+          <line x1="637" y1="276" x2="653" y2="276"/><line x1="637" y1="282" x2="653" y2="282"/>
+        </g>
+        <text x="657" y="280" fill="#3a3f44" font-size="8.5" font-weight="700">C1</text>
+
+        <!-- C2 100 nF: bus +3V3 to bus GND -->
+        <g stroke="#2b2f33" stroke-width="2.5" stroke-linecap="round">
+          <line x1="772" y1="372" x2="788" y2="372"/><line x1="772" y1="378" x2="788" y2="378"/>
+        </g>
+        <text x="786" y="398" fill="#3a3f44" font-size="8.5" font-weight="700">C2</text>
+
+        <!-- Reset button on RUN -->
+        <g stroke="#3a3f44" stroke-width="2" fill="#fbfbf6">
+          <circle cx="690" cy="370" r="4"/><circle cx="720" cy="370" r="4"/>
+          <line x1="684" y1="361" x2="726" y2="361"/><line x1="705" y1="361" x2="705" y2="354"/>
+        </g>
+        <text x="736" y="362" fill="#3a3f44" font-size="9">Reset</text>
+
+        <!-- 1 kΩ resistors + LEDs -->
+        <g>
+          <rect x="655" y="571" width="40" height="14" rx="3" fill="#d9c7a2" stroke="#8a7347"/>
+          <rect x="664" y="571" width="3" height="14" fill="#8a5a2b"/>
+          <rect x="671" y="571" width="3" height="14" fill="#1d1d1d"/>
+          <rect x="678" y="571" width="3" height="14" fill="#d62828"/>
+          <rect x="655" y="597" width="40" height="14" rx="3" fill="#d9c7a2" stroke="#8a7347"/>
+          <rect x="664" y="597" width="3" height="14" fill="#8a5a2b"/>
+          <rect x="671" y="597" width="3" height="14" fill="#1d1d1d"/>
+          <rect x="678" y="597" width="3" height="14" fill="#d62828"/>
+          <text x="675" y="566" fill="#3a3f44" font-size="8.5" text-anchor="middle">2×4.7k song song</text>
+          <circle cx="738" cy="578" r="10" fill="#ff5a4f" stroke="#9c1f17" stroke-width="1.5"/>
+          <circle cx="738" cy="604" r="10" fill="#4fd17a" stroke="#1d7a3d" stroke-width="1.5"/>
+          <text x="733" y="581" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">+</text>
+          <text x="743" y="581" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">−</text>
+          <text x="733" y="607" fill="#0f3d1f" font-size="8" font-weight="700" text-anchor="middle">+</text>
+          <text x="743" y="607" fill="#0f3d1f" font-size="8" font-weight="700" text-anchor="middle">−</text>
+          <text x="812" y="582" fill="#3a3f44" font-size="9.5">LED đỏ</text>
+          <text x="812" y="608" fill="#3a3f44" font-size="9.5">LED xanh</text>
+        </g>
+      </svg>
+    </div>
+    <p class="bench-note"><b id="view-note">Đang xem mặt trên: chân 1 (GP0) ở hàng trái, VBUS ở hàng phải.</b> Cổng USB luôn hướng lên. Số trên board là số chân vật lý (1–40), không phải số GP. Bus thực tế là 2 hàng rail của breadboard mini hoặc 2 đường đồng trên mạch đục lỗ. Kéo ngang nếu xem trên điện thoại.</p>
+  </div>
+
+  <div class="warn">
+    <p><b>Bus + là 3V3 từ Pico, không phải dây pin.</b> Không nối dây đỏ, nâu, tím hay hồng vào bus. Dòng pin phải chảy nối tiếp qua shunt của INA219 thì mới đo được. Nối pin thẳng vào bus thì INA219 bị bỏ qua, và 4.2 V của pin sẽ đi vào chân 3V3 làm hỏng Pico.</p>
+    <p><b>Đổi chân so với bản trước:</b> I2C chuyển sang <span class="mono">GP26 = SDA, GP27 = SCL</span> (I2C1), quang trở chuyển sang <span class="mono">GP28 / ADC2</span>. Nhờ vậy mọi dây đều nằm ở cạnh phải của Pico và không dây nào bắt chéo. Firmware sẽ viết theo các chân này.</p>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h2>Bảng dây</h2>
+      <p class="hint">Bấm một dòng để làm nổi dây đó, bấm lại để bỏ.</p>
+      <div class="legend" id="legend">
+        <button class="n-orange" data-net="orange" aria-pressed="false"><span class="sw"></span><span><b>Cam · Bus +3V3</b>
+          <span class="route">chân 36 3V3(OUT) → bus +3V3</span><span class="route">bus +3V3 → INA219 VCC</span><span class="route">bus +3V3 → quang trở (đầu trên)</span><span class="route">bus +3V3 → C2 100 nF, đặt sát INA219</span></span></button>
+        <button class="n-black" data-net="black" aria-pressed="false"><span class="sw"></span><span><b>Đen · Bus GND</b>
+          <span class="route">chân 28 GND → bus GND</span><span class="route">INA219 GND → bus GND</span><span class="route">TP4056 OUT− (chân dưới cùng) → bus GND, không lấy từ B−</span><span class="route">C2 100 nF → bus GND</span><span class="route">chân ngắn 2 LED → bus GND</span><span class="route">nút reset (chân còn lại) → bus GND</span><span class="route">18650 (−) → TP4056 B− (chân thứ 3 từ trên xuống)</span></span></button>
+        <button class="n-red" data-net="red" aria-pressed="false"><span class="sw"></span><span><b>Đỏ · Pin +</b>
+          <span class="route">18650 (+) → TP4056 B+ (chân thứ 2 từ trên xuống)</span><span class="route">TP4056 OUT+ (chân trên cùng) → công tắc</span></span></button>
+        <button class="n-brown" data-net="brown" aria-pressed="false"><span class="sw"></span><span><b>Nâu · Sau công tắc</b>
+          <span class="route">công tắc → INA219 VIN+</span></span></button>
+        <button class="n-purple" data-net="purple" aria-pressed="false"><span class="sw"></span><span><b>Tím · Sau shunt</b>
+          <span class="route">INA219 VIN− → 1N5819 (đầu không vạch)</span></span></button>
+        <button class="n-pink" data-net="pink" aria-pressed="false"><span class="sw"></span><span><b>Hồng · VSYS</b>
+          <span class="route">1N5819 (đầu có vạch bạc) → chân 39 VSYS</span></span></button>
+        <button class="n-yellow" data-net="yellow" aria-pressed="false"><span class="sw"></span><span><b>Vàng · SCL</b>
+          <span class="route">INA219 SCL → chân 32 GP27</span></span></button>
+        <button class="n-blue" data-net="blue" aria-pressed="false"><span class="sw"></span><span><b>Xanh dương · SDA</b>
+          <span class="route">INA219 SDA → chân 31 GP26</span></span></button>
+        <button class="n-green" data-net="green" aria-pressed="false"><span class="sw"></span><span><b>Xanh lá · ADC</b>
+          <span class="route">điểm giữa quang trở / 10 kΩ → chân 34 GP28</span><span class="route">chân 34 GP28 → C1 100 nF</span></span></button>
+        <button class="n-gray" data-net="gray" aria-pressed="false"><span class="sw"></span><span><b>Xám · AGND</b>
+          <span class="route">10 kΩ (đầu còn lại) → chân 33 AGND</span><span class="route">C1 100 nF (chân còn lại) → chân 33 AGND</span></span></button>
+        <button class="n-teal" data-net="teal" aria-pressed="false"><span class="sw"></span><span><b>Xanh ngọc · LED xanh</b>
+          <span class="route">chân 21 GP16 → 2×4.7k song song (≈2.35 kΩ) → chân dài LED xanh</span></span></button>
+        <button class="n-white" data-net="white" aria-pressed="false"><span class="sw"></span><span><b>Trắng · LED đỏ</b>
+          <span class="route">chân 22 GP17 → 2×4.7k song song (≈2.35 kΩ) → chân dài LED đỏ</span></span></button>
+        <button class="n-lav" data-net="lav" aria-pressed="false"><span class="sw"></span><span><b>Tím nhạt · Reset</b>
+          <span class="route">chân 30 RUN → nút reset</span></span></button>
+      </div>
+    </section>
+
+    <div>
+      <section class="card">
+        <h2>Chân Pico đang dùng</h2>
+        <table class="pinmap">
+          <thead><tr><th>Chân</th><th>Tên</th><th>Nối tới</th></tr></thead>
+          <tbody>
+            <tr><td>39</td><td class="n-pink"><span class="chip"></span>VSYS</td><td>diode 1N5819</td></tr>
+            <tr><td>36</td><td class="n-orange"><span class="chip"></span>3V3(OUT)</td><td>bus +3V3</td></tr>
+            <tr><td>34</td><td class="n-green"><span class="chip"></span>GP28 · ADC2</td><td>quang trở</td></tr>
+            <tr><td>33</td><td class="n-gray"><span class="chip"></span>AGND</td><td>10 kΩ</td></tr>
+            <tr><td>32</td><td class="n-yellow"><span class="chip"></span>GP27 · SCL1</td><td>INA219 SCL</td></tr>
+            <tr><td>31</td><td class="n-blue"><span class="chip"></span>GP26 · SDA1</td><td>INA219 SDA</td></tr>
+            <tr><td>30</td><td class="n-lav"><span class="chip"></span>RUN</td><td>nút reset</td></tr>
+            <tr><td>28</td><td class="n-black"><span class="chip"></span>GND</td><td>bus GND</td></tr>
+            <tr><td>22</td><td class="n-white"><span class="chip"></span>GP17</td><td>2×4.7k song song → LED đỏ</td></tr>
+            <tr><td>21</td><td class="n-teal"><span class="chip"></span>GP16</td><td>2×4.7k song song → LED xanh</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="card">
+        <h2>Kiểm tra trước khi cắm Pico</h2>
+        <ol>
+          <li>Chưa nối dây hồng vào VSYS. Lắp pin, bật công tắc.</li>
+          <li>Đo VIN− của INA219 so với bus GND: phải ra <b>3.0–4.2 V</b>.</li>
+          <li>Đo đầu có vạch của diode: thấp hơn bước 2 khoảng <b>0.3 V</b>, đúng cực tính.</li>
+          <li>Đo bus +3V3 so với bus GND: phải ra <b>0 V</b> lúc này (chưa có Pico). Nếu ra vài volt là có dây pin chạm vào bus.</li>
+          <li>Tắt công tắc, nối dây hồng vào chân 39, bật lại. LED trên Pico nháy và bus +3V3 lên khoảng 3.3 V là được.</li>
+        </ol>
+      </section>
+      <section class="card">
+        <h2>Lưu ý</h2>
+        <ul>
+          <li><b>Rút USB của Pico khi đo dòng.</b> Cắm USB thì Pico lấy nguồn 5 V từ USB và INA219 đọc gần 0 mA.</li>
+          <li>Thứ tự chân trên module INA219 thật có thể khác hình. Nối theo <b>chữ in trên board</b>, không theo vị trí.</li>
+          <li>Không hàn A0/A1 trên INA219 thì địa chỉ I2C là <span class="mono">0x40</span>.</li>
+          <li><b>LED:</b> chân dài (+) nối về phía điện trở và GPIO, chân ngắn (−, phía vành phẳng) nối bus GND. Cắm ngược thì LED không sáng nhưng không hỏng.</li>
+          <li><b>Tụ 100 nF</b> là tụ gốm, không phân cực. C2 có thể bỏ nếu module INA219 đã có sẵn tụ cạnh chân VCC.</li>
+          <li><b>Chưa có tụ hóa ở VSYS.</b> Nếu chạy pin mà Pico tự khởi động lại (nhìn thấy LED nháy kiểu lúc khởi động, hoặc <span class="mono">boot_id</span> ở Root đổi), hàn thêm tụ hóa 47–100 µF giữa VSYS và GND, chân dài (+) vào VSYS.</li>
+          <li><b>Nút reset:</b> giữ BOOTSEL, nhấn rồi nhả reset, sau đó nhả BOOTSEL là Pico vào chế độ nạp mà không phải rút cáp.</li>
+          <li>Sau này thêm cảm biến I2C khác chỉ cần cắm VCC/GND vào bus và nối song song SDA/SCL.</li>
+          <li>Hộp không gắn INA219: nối dây nâu từ công tắc thẳng vào đầu không vạch của diode, bỏ các dây vàng, xanh dương và dây VCC/GND của INA219.</li>
+          <li>Đặt pin và dây tránh vùng anten ở cuối board, đối diện cổng USB.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var left = ["GP0","GP1","GND","GP2","GP3","GP4","GP5","GND","GP6","GP7","GP8","GP9","GND","GP10","GP11","GP12","GP13","GND","GP14","GP15"];
+  var right = ["GP16","GP17","GND","GP18","GP19","GP20","GP21","GND","GP22","RUN","GP26","GP27","AGND","GP28","ADC_VREF","3V3","3V3_EN","GND","VSYS","VBUS"];
+  var used = { 21: "#14a3a3", 22: "#ffffff", 28: "#1d1d1d", 30: "#b39ddb", 31: "#2f6fd6", 32: "#e8b90c", 33: "#8b9196", 34: "#2e9e4f", 36: "#f08a24", 39: "#e8559a" };
+  var g = document.getElementById("pins");
+
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text) e.textContent = text;
+    g.appendChild(e);
+  }
+
+  for (var n = 1; n <= 40; n++) {
+    var isLeft = n <= 20;
+    var y = isLeft ? 110 + (n - 1) * 26 : 110 + (40 - n) * 26;
+    var x = isLeft ? 470 : 630;
+    var name = isLeft ? left[n - 1] : right[n - 21];
+    var on = used[n];
+    el("circle", { cx: x, cy: y, r: on ? 5 : 3.5, fill: on || "#d8c27a", stroke: on ? "#1f5733" : "#8a6d1c", "stroke-width": on ? 1.5 : 1 });
+    el("text", {
+      x: isLeft ? 480 : 620, y: y + 3.5, "font-size": 9.5,
+      "text-anchor": isLeft ? "start" : "end",
+      fill: on ? "#ffffff" : "#bfdcc9", "font-weight": on ? 700 : 400
+    }, isLeft ? n + " " + name : name + " " + n);
+  }
+
+  var svg = document.getElementById("dia");
+
+  var viewTop = document.getElementById("view-top");
+  var viewBottom = document.getElementById("view-bottom");
+  var viewNote = document.getElementById("view-note");
+  function setView(bottom) {
+    svg.classList.toggle("mirror", bottom);
+    viewTop.setAttribute("aria-pressed", String(!bottom));
+    viewBottom.setAttribute("aria-pressed", String(bottom));
+    viewNote.textContent = bottom
+      ? "Đang xem mặt dưới (mặt hàn): chân 1 (GP0) ở hàng phải, VBUS ở hàng trái, giống ảnh lật Pico."
+      : "Đang xem mặt trên: chân 1 (GP0) ở hàng trái, VBUS ở hàng phải.";
+    try { localStorage.setItem("pico-view", bottom ? "bottom" : "top"); } catch (e) {}
+  }
+  viewTop.addEventListener("click", function () { setView(false); });
+  viewBottom.addEventListener("click", function () { setView(true); });
+  try { if (localStorage.getItem("pico-view") === "bottom") setView(true); } catch (e) {}
+  var buttons = document.querySelectorAll("#legend button");
+  var wires = svg.querySelectorAll(".wire");
+  var pinned = null;
+
+  function show(net) {
+    svg.classList.toggle("focus", !!net);
+    wires.forEach(function (w) { w.classList.toggle("on", w.dataset.net === net); });
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener("mouseenter", function () { if (!pinned) show(b.dataset.net); });
+    b.addEventListener("mouseleave", function () { show(pinned); });
+    b.addEventListener("click", function () {
+      pinned = pinned === b.dataset.net ? null : b.dataset.net;
+      buttons.forEach(function (o) { o.setAttribute("aria-pressed", String(o.dataset.net === pinned)); });
+      show(pinned);
+    });
+  });
+})();
+</script>

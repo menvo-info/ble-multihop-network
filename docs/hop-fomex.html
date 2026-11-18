@@ -1,0 +1,185 @@
+<title>Hộp fomex node Pico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cutting sheet first (white paper on the page ground), then dimension table, assembly steps and assumptions. */
+:root {
+  --bg: #f2f4ef;
+  --surface: #ffffff;
+  --fg: #16201a;
+  --muted: #59695e;
+  --line: #d5ddd3;
+  --accent: #1f6f4a;
+  --warn-bg: #fff4dc;
+  --warn-fg: #6b4a00;
+  --paper: #ffffff;
+  --font-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+    --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+  --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.page { max-width: 1080px; margin: 0 auto; display: grid; gap: 24px; }
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 70ch; }
+.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; }
+.sheet img { display: block; width: 100%; min-width: 680px; height: auto; }
+.note { font-size: .85rem; color: var(--muted); margin: 8px 2px 0; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 820px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.card + .card { margin-top: 16px; }
+h2 { font-size: 1.1rem; margin: 0 0 10px; font-weight: 600; }
+ol, ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+td.n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 10px; padding: 14px 16px; font-size: .92rem; }
+.mono { font-family: var(--font-mono); font-size: .85em; }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Đồ án 2 · hộp node A / B / C · fomex 5 mm</div>
+    <h1>Hộp fomex node Pico</h1>
+    <p>Lòng hộp 110 × 80 × 30 mm, ngoài 120 × 90 × 40 mm. Mọi cổng và công tắc nằm trên tường A, đầu anten Pico quay về tường B, trước anten để trống.</p>
+  </header>
+
+  <div>
+    <div class="sheet"><img src="ban-cat-fomex-A4.svg" alt="Bản cắt fomex tỉ lệ 1:1: đáy, nắp, 2 thành dài, tường A có lỗ USB và công tắc, tường B, đệm TP4056 và 4 gờ nắp"></div>
+    <p class="note">File in nằm ở <span class="mono">docs/ban-cat-fomex-A4.svg</span> trong repo. Mở bằng Chrome, Ctrl+P, chọn A4 ngang, Scale 100% (hoặc "Kích thước thực"), lề "Không". In xong đo thước kiểm tra phải đúng 50 mm.</p>
+  </div>
+
+  <section class="card">
+    <h2>Kẻ tay bằng thước</h2>
+    <p class="note" style="margin:0 0 12px">Mọi số đo bằng mm, đo từ mép tấm. Kẻ chữ <b>A</b> bằng bút chì lên mép tấm phía tường A trước khi đo để không lật nhầm. Lỗ chữ nhật: kẻ 4 cạnh rồi rạch. Lỗ tròn: chấm tâm, dùi bằng mũi dao rồi xoay nong dần tới đúng cỡ.</p>
+    <div class="cols">
+      <div>
+        <h2 style="font-size:1rem">Tường A (80 × 30), nhìn từ ngoài</h2>
+        <table>
+          <thead><tr><th>Lỗ</th><th>Từ mép trái</th><th>Từ mép dưới</th></tr></thead>
+          <tbody>
+            <tr><td>USB Pico</td><td class="n">8 → 20</td><td class="n">13.5 → 21.5</td></tr>
+            <tr><td>Công tắc *</td><td class="n">33.5 → 46.5</td><td class="n">10.5 → 19.5</td></tr>
+            <tr><td>USB sạc TP4056</td><td class="n">61 → 74</td><td class="n">4.5 → 13.5</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Mép trái là phía có Pico. Mép dưới là mép đứng trên tấm đáy.</p>
+        <h2 style="font-size:1rem;margin-top:16px">Đáy (120 × 90), nhìn từ trên</h2>
+        <table>
+          <thead><tr><th>Dấu (không cắt)</th><th>Từ mép A</th><th>Từ mép trên</th></tr></thead>
+          <tbody>
+            <tr><td>Tâm 4 trụ M3</td><td class="n">9 và 73</td><td class="n">10 và 54</td></tr>
+            <tr><td>Đế pin 18650</td><td class="n">35 → 113</td><td class="n">62 → 83</td></tr>
+            <tr><td>Đệm TP4056</td><td class="n">6 → 34</td><td class="n">64 → 81</td></tr>
+            <tr><td>Đường dán thành</td><td class="n" colspan="2">5 mm vào trong từ cả 4 mép</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Mép trên là phía có Pico.</p>
+      </div>
+      <div>
+        <h2 style="font-size:1rem">Nắp (120 × 90), nhìn từ trên</h2>
+        <table>
+          <thead><tr><th>Lỗ tròn</th><th>Tâm từ mép A</th><th>Tâm từ mép trên</th><th>Ø</th></tr></thead>
+          <tbody>
+            <tr><td>LED đỏ</td><td class="n">27</td><td class="n">45</td><td class="n">5</td></tr>
+            <tr><td>LED xanh</td><td class="n">27</td><td class="n">53</td><td class="n">5</td></tr>
+            <tr><td>Quang trở</td><td class="n">45</td><td class="n">47</td><td class="n">5</td></tr>
+            <tr><td>Reset</td><td class="n">17</td><td class="n">37</td><td class="n">4</td></tr>
+            <tr><td>BOOTSEL *</td><td class="n">18</td><td class="n">16</td><td class="n">4</td></tr>
+            <tr><td>Đèn sạc 1 *</td><td class="n">20</td><td class="n">68</td><td class="n">3</td></tr>
+            <tr><td>Đèn sạc 2 *</td><td class="n">20</td><td class="n">73</td><td class="n">3</td></tr>
+          </tbody>
+        </table>
+        <h2 style="font-size:1rem;margin-top:16px">Gờ dán mặt dưới nắp</h2>
+        <table>
+          <thead><tr><th>Gờ</th><th>Từ mép A</th><th>Từ mép trên</th></tr></thead>
+          <tbody>
+            <tr><td>Dài 1 (100×8)</td><td class="n">10 → 110</td><td class="n">5.5 → 13.5</td></tr>
+            <tr><td>Dài 2 (100×8)</td><td class="n">10 → 110</td><td class="n">76.5 → 84.5</td></tr>
+            <tr><td>Ngắn 1 (60×8)</td><td class="n">5.5 → 13.5</td><td class="n">15 → 75</td></tr>
+            <tr><td>Ngắn 2 (60×8)</td><td class="n">106.5 → 114.5</td><td class="n">15 → 75</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Số đo gờ tính khi nhìn nắp từ trên xuống. Lật nắp lại thì mép A đổi sang bên phải. Dễ nhất là kẻ gờ ở mặt trên trước, dùng kim xuyên 4 góc xuống mặt dưới để lấy dấu.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="warn"><b>Ô có dấu *</b> (công tắc, BOOTSEL, đèn sạc TP4056) là vị trí ước lượng. Lỗ công tắc 13 × 9 mm theo loại công tắc bập bênh mini; công tắc của bạn khác cỡ thì đo phần thân lọt qua thành rồi sửa lại. Lỗ BOOTSEL và đèn sạc nên đánh dấu khi đã đặt linh kiện vào hộp rồi mới khoét nắp.</div>
+
+  <div class="cols">
+    <div>
+      <section class="card">
+        <h2>Danh sách tấm cắt</h2>
+        <table>
+          <thead><tr><th>Tấm</th><th>Kích thước (mm)</th><th>SL</th></tr></thead>
+          <tbody>
+            <tr><td>Đáy</td><td class="n">120 × 90</td><td class="n">1</td></tr>
+            <tr><td>Nắp</td><td class="n">120 × 90</td><td class="n">1</td></tr>
+            <tr><td>Thành dài</td><td class="n">120 × 30</td><td class="n">2</td></tr>
+            <tr><td>Tường A (có lỗ)</td><td class="n">80 × 30</td><td class="n">1</td></tr>
+            <tr><td>Tường B</td><td class="n">80 × 30</td><td class="n">1</td></tr>
+            <tr><td>Đệm kê TP4056</td><td class="n">28 × 17</td><td class="n">1</td></tr>
+            <tr><td>Gờ nắp dài</td><td class="n">100 × 8</td><td class="n">2</td></tr>
+            <tr><td>Gờ nắp ngắn</td><td class="n">60 × 8</td><td class="n">2</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Thành dài phủ ngoài hai tường A/B, cả bốn thành đứng trên đáy. Nắp đặt lên trên, 4 gờ dán mặt dưới nắp để nắp không trượt.</p>
+      </section>
+      <section class="card">
+        <h2>Số đo đã giả định</h2>
+        <ul>
+          <li>Tâm lỗ USB Pico cao <b>17.4 mm</b> tính từ mặt đáy trong: trụ 5 mm + mạch 1.6 mm + header cái 8.5 mm + Pico + nửa cổng USB. Header của bạn cao khác thì dời lỗ theo.</li>
+          <li>TP4056 dán trên tấm đệm 5 mm, tâm cổng sạc cao khoảng <b>9 mm</b>.</li>
+          <li>Đế pin 18650 dài khoảng 78 mm, rộng 21 mm.</li>
+          <li>LED và quang trở gắn trên nắp, nối dây mềm về mạch, nên vị trí lỗ trên nắp đổi tùy ý được.</li>
+        </ul>
+      </section>
+    </div>
+
+    <div>
+      <section class="card">
+        <h2>Cắt và lắp</h2>
+        <ol>
+          <li>In bản cắt, kiểm tra thước 50 mm, dán giấy lên fomex bằng keo khô hoặc băng keo giấy.</li>
+          <li>Cắt bằng dao rọc giấy và thước sắt, rạch 3–4 lượt nhẹ thay vì một lượt mạnh để mép thẳng.</li>
+          <li>Khoét lỗ tường A trước khi ghép. Lỗ tròn trên nắp: khoan nhỏ rồi nong dần, hoặc dùng mũi khoan đúng cỡ.</li>
+          <li>Dán tường A, tường B và 2 thành dài lên đáy theo nét đứt 5 mm. Keo nến chắc và dễ sửa; keo 502 bám fomex tốt nhưng không gỡ lại được.</li>
+          <li>Dán 4 trụ M3 theo dấu tròn, dán tấm đệm rồi TP4056, dán đế pin.</li>
+          <li>Đặt thử mạch, kiểm tra cáp USB cắm lọt vào cổng Pico và cổng sạc qua tường A.</li>
+          <li>Đặt nắp lên, đánh dấu vị trí BOOTSEL và đèn sạc, khoét, rồi dán 4 gờ dưới nắp.</li>
+        </ol>
+      </section>
+      <section class="card">
+        <h2>Lưu ý</h2>
+        <ul>
+          <li><b>Không dùng mỏ hàn hay que nóng để khoét fomex.</b> Fomex là nhựa PVC, khi nóng chảy sẽ sinh khói độc chứa clo.</li>
+          <li>Đo cả 4 tấm thành bằng cùng một thước, kẻ vuông góc bằng ê ke hoặc mép tờ giấy A4. Lệch 1–2 mm thì nắp sẽ hở.</li>
+          <li>Không dán băng keo nhôm hay đặt ốc vít kim loại ở đầu tường B, trước anten Pico.</li>
+          <li>BOOTSEL và Reset bấm qua lỗ nắp bằng tăm. Khi đã nạp được bằng <span class="mono">picotool load -f</span> thì hiếm khi cần.</li>
+          <li>Nắp chỉ đặt và giữ bằng gờ. Muốn chắc hơn thì quấn thun hoặc dán 2 miếng băng keo, đừng dán chết vì còn phải sạc và sửa mạch.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>

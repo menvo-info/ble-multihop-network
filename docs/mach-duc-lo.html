@@ -1,0 +1,398 @@
+<title>Mạch đục lỗ node Pico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: portrait perfboard drawing (fixed light bench canvas, real wire colours), top/bottom toggle, then net list + parts. */
+:root {
+  --bg: #f2f4ef;
+  --surface: #ffffff;
+  --fg: #16201a;
+  --muted: #59695e;
+  --line: #d5ddd3;
+  --accent: #1f6f4a;
+  --warn-bg: #fff4dc;
+  --warn-fg: #6b4a00;
+  --canvas: #fbfbf6;
+  --font-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+    --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101512; --surface: #171f1a; --fg: #e3eae4; --muted: #9aaa9f;
+  --line: #2b362f; --accent: #63c493; --warn-bg: #2e2510; --warn-fg: #f1d48a;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.page { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 72ch; }
+h2 { font-size: 1.1rem; margin: 0 0 10px; font-weight: 600; }
+.viewbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.viewbar button {
+  font: inherit; font-size: .9rem; cursor: pointer; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg);
+}
+.viewbar button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--surface); }
+.viewbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bench { background: var(--canvas); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+.bench svg { display: block; width: 100%; max-width: 760px; min-width: 600px; height: auto; margin: 0 auto; }
+.note { font-size: .85rem; color: var(--muted); margin: 8px 2px 0; }
+svg text { font-family: var(--font-mono); paint-order: stroke; stroke: rgba(251,251,246,.92); stroke-width: 3px; stroke-linejoin: round; }
+.wire path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wire .casing { stroke: rgba(0,0,0,.3); stroke-width: 7; }
+.wire .core { stroke: var(--w); stroke-width: 4.5; }
+.wire .bus { stroke: var(--w); stroke-width: 8; opacity: .9; }
+.wire .fly { stroke: var(--w); stroke-width: 3; stroke-dasharray: 7 5; }
+.wire .flycase { stroke: rgba(0,0,0,.25); stroke-width: 5; stroke-dasharray: 7 5; }
+svg.focus .wire:not(.on) { opacity: .1; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 880px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.legend { display: grid; gap: 6px; }
+.legend button {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start;
+  padding: 9px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line);
+}
+.legend button:hover, .legend button[aria-pressed="true"] { border-color: var(--accent); }
+.legend button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sw { width: 34px; height: 10px; margin-top: 7px; border-radius: 5px; background: var(--w); box-shadow: 0 0 0 1px var(--line), inset 0 -2px 0 rgba(0,0,0,.25); }
+.legend b { font-weight: 600; }
+.legend .route { display: block; font-family: var(--font-mono); font-size: .8rem; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.card + .card { margin-top: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; }
+td.n { font-family: var(--font-mono); white-space: nowrap; }
+ol, ul { margin: 0; padding-left: 1.2em; display: grid; gap: 7px; }
+.warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 10px; padding: 14px 16px; font-size: .92rem; display: grid; gap: 6px; }
+.warn p { margin: 0; }
+.mono { font-family: var(--font-mono); font-size: .85em; }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Đồ án 2 · hộp node · mạch đục lỗ 5 × 7 cm dựng đứng (18 × 24 lỗ)</div>
+    <h1>Mạch đục lỗ node Pico</h1>
+    <p>Mọi linh kiện hàn chết trên mạch, kể cả INA219. Chỉ 5 thứ trên nắp cắm qua header 2 chân: công tắc, LED đỏ, LED xanh, quang trở, nút reset. Hàng 1 là bus +3V3, hàng 24 là bus GND. Dây liền là dây hàn mặt dưới, không dây nào bắt chéo. Dây nét đứt là 2 sợi dây có vỏ đi ở mặt trên.</p>
+  </header>
+
+  <div>
+    <div class="viewbar" role="group" aria-label="Hướng nhìn">
+      <button type="button" id="view-bottom" aria-pressed="true">Mặt dưới · mặt hàn</button>
+      <button type="button" id="view-top" aria-pressed="false">Mặt trên · đặt linh kiện</button>
+    </div>
+    <div class="bench"><svg id="pcb" viewBox="0 0 714 700" role="img" aria-label="Bố trí mạch đục lỗ dựng đứng: Pico, INA219 hàn chết, 5 header 2 chân cho công tắc, 2 LED, quang trở và nút reset"></svg></div>
+    <p class="note" id="view-note"></p>
+  </div>
+
+  <div class="warn">
+    <p><b>Pico:</b> chân 1 (GP0) ở <span class="mono">B2</span>, chân 40 ở <span class="mono">I2</span>, chân 21 ở <span class="mono">I21</span>. <b>GND Pico nối bus</b> qua chân 18: <span class="mono">B19 → A19 → A24</span>. Hàn xong đo <span class="mono">B19 ↔ R24</span> phải kêu.</p>
+    <p><b>Hàn 2 điện trở LED trước khi cắm Pico:</b> chúng nằm phẳng dưới thân Pico (hàng 20, 21), Pico cắm đè lên trên sau. Header LED đỏ và LED xanh ở hàng 23 nằm ngay dưới đầu anten: chỉ cắm dây mảnh, đừng đặt thêm kim loại ở đây.</p>
+    <p><b>INA219 lật úp:</b> <b>tháo cầu đấu vít xanh trước</b> (nếu không nó cấn xuống mạch). Lật module cho chân dài cắm xuống, thân nằm phía dưới (hàng 14 → 23). Thứ tự lỗ: <span class="mono">L13 VCC · M13 GND · N13 SCL · O13 SDA · P13 VIN− · Q13 VIN+</span>. Cắm xong, trước khi hàn, đo thông mạch từng chân với chữ in trên module.</p>
+    <p><b>3 dây có vỏ</b> (nét đứt): VCC <span class="mono">O6 → L13</span>, VIN− <span class="mono">P13 → M3</span>, VIN+ <span class="mono">R5 → Q13</span>. Dây VCC hàn ở mặt dưới, có vỏ nên vắt qua các đường khác được. Bỏ tụ C2: module INA219 đã có sẵn tụ lọc.</p>
+    <p><b>Diode:</b> vạch bạc ở <span class="mono">J3</span>. Cắm USB đo <span class="mono">M3</span> phải gần 0 V.</p>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h2>Danh sách mối nối</h2>
+      <p class="note" style="margin:0 0 10px">Bấm một dòng để làm nổi dây đó. Ghi chữ A–R dọc cạnh 5 cm, số 1–24 dọc cạnh 7 cm bằng bút lông trước khi hàn.</p>
+      <div class="legend" id="legend"></div>
+    </section>
+    <div>
+      <section class="card">
+        <h2>5 header ra nắp</h2>
+        <table>
+          <thead><tr><th>Header</th><th>Chân 1</th><th>Chân 2</th><th>Cắm ngược</th></tr></thead>
+          <tbody>
+            <tr><td>Công tắc</td><td class="n">R4 · pin vào</td><td class="n">R5 · ra VIN+</td><td>Không sao</td></tr>
+            <tr><td>Quang trở</td><td class="n">M6 · 3V3</td><td class="n">M7 · GP28</td><td>Không sao</td></tr>
+            <tr><td>Nút reset</td><td class="n">K12 · RUN</td><td class="n">K13 · GND</td><td>Không sao</td></tr>
+            <tr><td>LED đỏ</td><td class="n">C23 · +</td><td class="n">B23 · −</td><td>LED không sáng</td></tr>
+            <tr><td>LED xanh</td><td class="n">D23 · +</td><td class="n">E23 · −</td><td>LED không sáng</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Đánh dấu chân + của LED đỏ và LED xanh lên mạch và lên đầu dây. Header nằm sát nhau nên ghi tên đầy đủ (công tắc, quang trở, nút reset, LED đỏ, LED xanh) cạnh từng header để không cắm nhầm.</p>
+      </section>
+      <section class="card">
+        <h2>Linh kiện hàn chết</h2>
+        <table>
+          <thead><tr><th>Linh kiện</th><th>Lỗ</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td>Bus +3V3 / bus GND</td><td class="n">A1→R1 / A24→R24</td><td>Dây đồng trần</td></tr>
+            <tr><td>Header cái Pico</td><td class="n">B2→B21, I2→I21</td><td></td></tr>
+            <tr><td>Diode 1N5819</td><td class="n">J3 – M3</td><td>Vạch bạc ở J3</td></tr>
+            <tr><td>10k (dựng đứng)</td><td class="n">K8 – K9</td><td></td></tr>
+            <tr><td>Tụ C1 100 nF</td><td class="n">L8 – L9</td><td></td></tr>
+            <tr><td>2×4.7k LED đỏ (nằm)</td><td class="n">G20 – C20</td><td>Dưới thân Pico, 2 con chồng cùng lỗ</td></tr>
+            <tr><td>2×4.7k LED xanh (nằm)</td><td class="n">G21 – D21</td><td>Dưới thân Pico</td></tr>
+            <tr><td>INA219 (lật úp)</td><td class="n">L13 → Q13</td><td>VCC, GND, SCL, SDA, VIN−, VIN+. Tháo cầu vít trước</td></tr>
+            <tr><td>Dây TP4056 OUT+</td><td class="n">R4</td><td>Hàn chung lỗ với chân 1 header công tắc</td></tr>
+            <tr><td>Dây TP4056 OUT−</td><td class="n">R24</td><td>Trên bus GND</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var COLS = "ABCDEFGHIJKLMNOPQR";
+  var P = 22, X0 = 170, Y0 = 56;
+  var svg = document.getElementById("pcb");
+  var bottom = true;
+  var active = null;
+
+  // Top-view hole coordinates [col, row], 0-based (A1 = [0,0]).
+  var NETS = [
+    { id: "orange", color: "#f08a24", name: "Cam · +3V3",
+      bus: [[[0, 0], [17, 0]]],
+      segs: [[[8, 5], [7, 5], [7, 0]], [[12, 5], [16, 5], [16, 0]]],
+      routes: ["Bus A1 → R1", "I6 (chân 36) → H6 → H1", "M6 (header quang trở, chân 1) → Q6 → Q1"] },
+    { id: "vcc", color: "#f08a24", name: "Cam · VCC INA219 (dây có vỏ)",
+      fly: [{ pts: [[14, 5], [14, 4.45], [10.45, 4.45], [10.45, 11.5], [11, 12]], label: "" }],
+      routes: ["O6 (đường 3V3 hàng 6) ⇢ L13 (INA VCC)"] },
+    { id: "black", color: "#1d1d1d", name: "Đen · GND",
+      bus: [[[0, 23], [17, 23]]],
+      segs: [[[1, 18], [0, 18], [0, 23]], [[12, 12], [12, 23]], [[8, 13], [9, 13], [9, 12], [10, 12]], [[1, 22], [1, 23]], [[4, 22], [4, 23]]],
+      fly: [{ pts: [[17, 23], [19.4, 23]], label: "← OUT− TP4056" }],
+      routes: ["Bus A24 → R24", "B19 (chân 18 GND) → A19 → A24", "M13 (INA GND) → M24",
+               "I14 (chân 28) → J14 → J13 → K13 (header nút reset, chân 2)", "B23 (LED đỏ −) → B24, E23 (LED xanh −) → E24", "R24 ⇢ OUT− TP4056"] },
+    { id: "red", color: "#d62828", name: "Đỏ · pin vào (qua công tắc)",
+      fly: [{ pts: [[17, 3], [19.4, 3]], label: "← OUT+ TP4056" }],
+      routes: ["Dây OUT+ TP4056 hàn vào R4 (chung lỗ chân 1 header công tắc)"] },
+    { id: "brown", color: "#8a5a2b", name: "Nâu · sau công tắc (dây có vỏ, mặt trên)",
+      fly: [{ pts: [[17, 4], [17.55, 4.5], [17.55, 11.45], [16.5, 11.45], [16, 12]], label: "" }],
+      routes: ["R5 (header công tắc, chân 2) ⇢ Q13 (INA219 VIN+)"] },
+    { id: "purple", color: "#8e44ad", name: "Tím · sau shunt (dây có vỏ, mặt trên)",
+      fly: [{ pts: [[15, 12], [15.5, 11.45], [15.5, 2.55], [12, 2]], label: "" }],
+      routes: ["P13 (INA VIN−) ⇢ M3 (đầu không vạch diode)"] },
+    { id: "pink", color: "#e8559a", name: "Hồng · VSYS",
+      segs: [[[8, 2], [9, 2]]],
+      routes: ["I3 (chân 39 VSYS) → J3 (vạch bạc diode)"] },
+    { id: "green", color: "#2e9e4f", name: "Xanh lá · ADC",
+      segs: [[[8, 7], [12, 7], [12, 6]]],
+      routes: ["I8 (chân 34 GP28) → M8 → M7 (header quang trở, chân 2), qua K8 (10k), L8 (C1)"] },
+    { id: "gray", color: "#8b9196", name: "Xám · AGND",
+      segs: [[[8, 8], [11, 8]]],
+      routes: ["I9 (chân 33 AGND) → L9: qua K9 (10k), L9 (C1)"] },
+    { id: "yellow", color: "#e8b90c", name: "Vàng · SCL",
+      segs: [[[8, 9], [17, 9], [17, 13], [13, 13], [13, 12]]],
+      routes: ["I10 (chân 32 GP27) → R10 → R14 → N14 → N13 (INA SCL), luồn dưới thân module"] },
+    { id: "blue", color: "#2f6fd6", name: "Xanh dương · SDA",
+      segs: [[[8, 10], [14, 10], [14, 12]]],
+      routes: ["I11 (chân 31 GP26) → O11 → O13 (INA SDA)"] },
+    { id: "lav", color: "#b39ddb", name: "Tím nhạt · RUN",
+      segs: [[[8, 11], [10, 11]]],
+      routes: ["I12 (chân 30 RUN) → K12 (header nút reset, chân 1)"] },
+    { id: "white", color: "#ffffff", name: "Trắng · LED đỏ",
+      segs: [[[8, 19], [6, 19]], [[2, 19], [2, 22]]],
+      routes: ["I20 (chân 22 GP17) → G20, điện trở G20 – C20, C20 → C23 (header LED đỏ, chân +)"] },
+    { id: "teal", color: "#14a3a3", name: "Xanh ngọc · LED xanh",
+      segs: [[[8, 20], [6, 20]], [[3, 20], [3, 22]]],
+      routes: ["I21 (chân 21 GP16) → G21, điện trở G21 – D21, D21 → D23 (header LED xanh, chân +)"] }
+  ];
+
+  var PICO_PINS = { 1: "VBUS 40", 2: "VSYS 39", 3: "GND 38", 5: "3V3 36", 7: "GP28 34", 8: "AGND 33", 9: "GP27 32",
+                    10: "GP26 31", 11: "RUN 30", 13: "GND 28", 18: "GND 23", 19: "GP17 22", 20: "GP16 21" };
+  var LEFT_PINS = { 18: "18 GND" };
+  var INA_PADS = ["VCC", "GND", "SCL", "SDA", "VIN−", "VIN+"];
+  var HEADERS = [
+    { name: "Công tắc", pins: [[17, 3], [17, 4]], lab: ["in", "out"] },
+    { name: "Quang trở", pins: [[12, 5], [12, 6]], lab: ["3V3", "A2"] },
+    { name: "Nút reset", pins: [[10, 11], [10, 12]], lab: ["RUN", "GND"] },
+    { name: "LED đỏ", pins: [[2, 22], [1, 22]], lab: ["+", "−"] },
+    { name: "LED xanh", pins: [[3, 22], [4, 22]], lab: ["+", "−"] }
+  ];
+
+  function X(c) { return X0 + (bottom ? 17 - c : c) * P; }
+  function Y(r) { return Y0 + r * P; }
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    (parent || svg).appendChild(e);
+    return e;
+  }
+  function d(pts) {
+    return pts.map(function (p, i) { return (i ? "L" : "M") + X(p[0]) + " " + Y(p[1]); }).join(" ");
+  }
+  function rect(c1, r1, c2, r2, attrs, parent) {
+    var xa = X(c1), xb = X(c2);
+    var a = Object.assign({ x: Math.min(xa, xb), y: Y(r1), width: Math.abs(xb - xa), height: Y(r2) - Y(r1) }, attrs);
+    return el("rect", a, parent);
+  }
+  function txt(c, r, s, attrs, dx) {
+    return el("text", Object.assign({ x: X(c) + (dx || 0), y: Y(r), "font-size": 9, "text-anchor": "middle", fill: "#3a3f44" }, attrs || {}), null, s);
+  }
+  function resistor(c1, c2, r) {
+    rect(Math.min(c1, c2) + 0.7, r - 0.28, Math.max(c1, c2) - 0.7, r + 0.28, { fill: "#d9c7a2", stroke: "#8a7347", rx: 4 });
+    el("line", { x1: X(c1), y1: Y(r), x2: X(c2), y2: Y(r), stroke: "#777", "stroke-width": 1.5 });
+  }
+
+  function render() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    el("rect", { x: 0, y: 0, width: 714, height: 700, fill: "#fbfbf6" });
+
+    rect(-0.75, -0.75, 17.75, 23.75, { rx: 6, fill: "#2f8a5a", stroke: "#1f5f3e" });
+    var g = el("g", {});
+    for (var c = 0; c < 18; c++) {
+      el("text", { x: X(c), y: Y(-1.5), "font-size": 10, "text-anchor": "middle", fill: "#1f3a2a", "font-weight": 700 }, g, COLS[c]);
+      for (var r = 0; r < 24; r++) {
+        el("circle", { cx: X(c), cy: Y(r), r: 4.4, fill: "#d8dcdf" }, g);
+        el("circle", { cx: X(c), cy: Y(r), r: 1.8, fill: "#1b2a22" }, g);
+      }
+    }
+    for (var r2 = 0; r2 < 24; r2++) {
+      el("text", { x: X(bottom ? 18.3 : -1.3), y: Y(r2) + 3.5, "font-size": 9, "text-anchor": "middle", fill: "#1f3a2a" }, g, r2 + 1);
+    }
+    txt(8.5, -2.25, "↑ mép tường A (USB Pico) · hàng 1 = bus +3V3", { "font-size": 10 });
+    txt(8.5, 25.4, "↓ hàng 24 = bus GND · sau đó là khoảng trống trước anten", { "font-size": 10 });
+
+    // Pico footprint + sockets
+    var picoAttrs = bottom
+      ? { fill: "none", stroke: "#a7e3bf", "stroke-width": 2, "stroke-dasharray": "6 4", rx: 6 }
+      : { fill: "rgba(20,70,40,.35)", stroke: "#a7e3bf", "stroke-width": 2, rx: 6 };
+    rect(0.37, 0.45, 8.63, 20.55, picoAttrs);
+    rect(3.6, -0.2, 5.4, 0.45, { fill: "#c3c8cc", stroke: "#8c9297" });
+    [1, 8].forEach(function (sc) {
+      rect(sc - 0.38, 0.6, sc + 0.38, 20.4, { fill: "rgba(10,10,10,.6)", rx: 3 });
+      for (var sr = 1; sr <= 20; sr++) el("circle", { cx: X(sc), cy: Y(sr), r: 3, fill: "#e2c46b" });
+    });
+    txt(4.5, 9.5, bottom ? "Pico (ở mặt kia)" : "Pico 2 W", { "font-size": 12, "font-weight": 700, fill: "#0f3d22" });
+    rect(1.3, 20.62, 7.7, 20.9, { fill: "rgba(167,227,191,.6)", rx: 2 });
+    txt(7.1, 21.45, "↑ đầu anten Pico", { "font-size": 8, fill: "#0f3d22" });
+    Object.keys(PICO_PINS).forEach(function (k) {
+      el("text", { x: X(8) + (bottom ? 9 : -9), y: Y(+k) + 3.5, "font-size": 8.5, "font-weight": 700,
+                   "text-anchor": bottom ? "start" : "end", fill: "#0f3d22" }, null, PICO_PINS[k]);
+    });
+    Object.keys(LEFT_PINS).forEach(function (k) {
+      el("text", { x: X(1) + (bottom ? -9 : 9), y: Y(+k) + 3.5, "font-size": 8.5, "font-weight": 700,
+                   "text-anchor": bottom ? "end" : "start", fill: "#0f3d22" }, null, LEFT_PINS[k]);
+    });
+
+    // INA219 footprint
+    rect(9.6, 12.6, 17.4, 22.4, { fill: bottom ? "none" : "rgba(91,63,140,.35)", stroke: "#cdb8f0", "stroke-width": 2,
+                                  "stroke-dasharray": bottom ? "6 4" : "0", rx: 5 });
+    txt(13.5, 18.2, bottom ? "INA219 (ở mặt kia)" : "INA219 (lật úp)", { "font-size": 11, "font-weight": 700, fill: "#3e2a63" });
+    txt(13.5, 19.2, "chân dài cắm xuống, đã tháo cầu vít", { "font-size": 8, fill: "#3e2a63" });
+
+    NETS.forEach(function (n) {
+      var wg = el("g", { "class": "wire", "data-net": n.id, style: "--w:" + n.color });
+      (n.bus || []).forEach(function (pts) {
+        el("path", { "class": "casing", d: d(pts), "stroke-width": 11 }, wg);
+        el("path", { "class": "bus", d: d(pts) }, wg);
+      });
+      (n.segs || []).forEach(function (pts) {
+        el("path", { "class": "casing", d: d(pts) }, wg);
+        el("path", { "class": "core", d: d(pts) }, wg);
+      });
+      (n.fly || []).forEach(function (f) {
+        el("path", { "class": "flycase", d: d(f.pts) }, wg);
+        el("path", { "class": "fly", d: d(f.pts) }, wg);
+        if (f.label) {
+          var end = f.pts[f.pts.length - 1];
+          el("text", { x: X(end[0]) + (bottom ? -6 : 6), y: Y(end[1]) + 3.5, "font-size": 9.5,
+                       "text-anchor": bottom ? "end" : "start", fill: "#3a3f44" }, wg, f.label);
+        }
+      });
+    });
+
+    // diode J3-M3, band at J3
+    rect(9.25, 1.7, 11.75, 2.3, { fill: "#1e1e1e", rx: 3 });
+    rect(9.25, 1.7, 9.6, 2.3, { fill: "#cfd3d6" });
+    txt(10.5, 1.45, "1N5819");
+    // 10k standing K8-K9, C1 L8-L9
+    el("circle", { cx: X(10), cy: Y(7), r: 7, fill: "#d9c7a2", stroke: "#8a7347" });
+    el("line", { x1: X(10), y1: Y(7), x2: X(10), y2: Y(8), stroke: "#777", "stroke-width": 2 });
+    txt(10, 6.45, "10k", { "font-size": 8 });
+    rect(10.75, 7.15, 11.25, 7.85, { fill: "#d98c2b", rx: 4 });
+    el("text", { x: X(11) + (bottom ? -9 : 9), y: Y(7.6), "font-size": 8, "text-anchor": bottom ? "end" : "start", fill: "#3a3f44" }, null, "C1");
+    // LED resistors under the Pico
+    resistor(6, 2, 19);
+    resistor(6, 3, 20);
+    txt(4, 18.85, "2×4.7k", { "font-size": 7.5 });
+    // INA pads row 13
+    INA_PADS.forEach(function (name, i) {
+      var c = 11 + i;
+      el("circle", { cx: X(c), cy: Y(12), r: 5, fill: "#e2c46b", stroke: "#5b3f8c", "stroke-width": 2 });
+      el("text", { x: X(c), y: Y(12) + 17, "font-size": 7.5, "font-weight": 700, "text-anchor": "middle", fill: "#3e2a63" }, null, name);
+    });
+    // 2-pin headers to the lid
+    HEADERS.forEach(function (h) {
+      var a = h.pins[0], b = h.pins[1];
+      var c1 = Math.min(a[0], b[0]) - 0.42, c2 = Math.max(a[0], b[0]) + 0.42;
+      var r1 = Math.min(a[1], b[1]) - 0.42, r2 = Math.max(a[1], b[1]) + 0.42;
+      rect(c1, r1, c2, r2, { fill: bottom ? "none" : "#111", stroke: "#ffd23f", "stroke-width": 2, rx: 2 });
+      h.pins.forEach(function (p, i) {
+        el("rect", { x: X(p[0]) - 3, y: Y(p[1]) - 3, width: 6, height: 6, fill: "#ffd23f" });
+      });
+      var lc = (a[0] + b[0]) / 2;
+      var lr = Math.min(a[1], b[1]) - 0.62;
+      el("text", { x: X(lc), y: Y(lr), "font-size": 8.5, "font-weight": 700,
+                   "text-anchor": "middle", fill: "#7a5a00" }, null, h.name);
+    });
+
+    svg.classList.toggle("focus", !!active);
+    svg.querySelectorAll(".wire").forEach(function (w) { w.classList.toggle("on", w.dataset.net === active); });
+  }
+
+  var legend = document.getElementById("legend");
+  NETS.forEach(function (n) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.dataset.net = n.id;
+    b.style.setProperty("--w", n.color);
+    b.innerHTML = '<span class="sw"></span><span><b></b></span>';
+    b.querySelector("b").textContent = n.name;
+    n.routes.forEach(function (t) {
+      var s = document.createElement("span");
+      s.className = "route";
+      s.textContent = t;
+      b.lastChild.appendChild(s);
+    });
+    b.addEventListener("click", function () {
+      active = active === n.id ? null : n.id;
+      legend.querySelectorAll("button").forEach(function (o) { o.setAttribute("aria-pressed", String(o.dataset.net === active)); });
+      render();
+    });
+    legend.appendChild(b);
+  });
+
+  var vt = document.getElementById("view-top"), vb = document.getElementById("view-bottom");
+  var note = document.getElementById("view-note");
+  function setView(isBottom) {
+    bottom = isBottom;
+    vt.setAttribute("aria-pressed", String(!isBottom));
+    vb.setAttribute("aria-pressed", String(isBottom));
+    note.textContent = isBottom
+      ? "Mặt dưới (mặt hàn): cột chữ đảo thành R → A từ trái sang. Pico, INA219 và thân header ở mặt kia nên vẽ nét đứt. Ô vàng là chân header."
+      : "Mặt trên (đặt linh kiện): cột A → R từ trái sang. Khối đen viền vàng là header 2 chân ra nắp.";
+    try { localStorage.setItem("pcb3-view", isBottom ? "bottom" : "top"); } catch (e) {}
+    render();
+  }
+  vt.addEventListener("click", function () { setView(false); });
+  vb.addEventListener("click", function () { setView(true); });
+  var saved = null;
+  try { saved = localStorage.getItem("pcb3-view"); } catch (e) {}
+  setView(saved !== "top");
+})();
+</script>
