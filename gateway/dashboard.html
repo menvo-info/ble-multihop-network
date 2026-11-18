@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WSN trực tiếp</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f4f1; --surface: #fcfcfb; --line: #e2e1dc; --grid: #ecebe6; --flash: #fff3c4;
+  --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7974;
+  --s-a: #2a78d6; --s-b: #eb6834; --s-c: #1baf7a; --s-r: #6b6a66;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --line: #2e2e2c; --grid: #262624; --flash: #3a3220;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+    --s-a: #3987e5; --s-b: #d95926; --s-c: #199e70; --s-r: #a3a29a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --line: #2e2e2c; --grid: #262624; --flash: #3a3220;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+  --s-a: #3987e5; --s-b: #d95926; --s-c: #199e70; --s-r: #a3a29a;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 14px; }
+h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
+.meta { color: var(--text-2); font-size: 13px; }
+.meta b { color: var(--text); font-weight: 600; }
+.spacer { flex: 1; }
+select, button { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 6px; padding: 5px 8px; cursor: pointer; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; padding: 5px 10px; background: var(--surface); color: var(--text-2); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--surface); }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--s-a); outline-offset: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex: none; }
+.dot.good { background: var(--good); } .dot.warn { background: var(--warn); } .dot.crit { background: var(--crit); }
+.pill.live .dot { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .pill.live .dot { animation: none; } tr.new { animation: none !important; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.card h2 { font-size: 12px; font-weight: 600; color: var(--text-2); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+.top { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 14px; margin-bottom: 14px; }
+.nodes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.node.off { opacity: .5; }
+.node-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; display: inline-block; }
+.node-name { font-weight: 700; font-size: 16px; }
+.fresh { margin-left: auto; font-size: 12px; color: var(--text-2); display: inline-flex; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.hero { display: flex; gap: 18px; align-items: baseline; }
+.big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.big small { font-size: 12px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0 0; font-size: 13px; }
+dt { color: var(--text-2); } dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 20px; }
+.flag { font-size: 11px; padding: 0 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--text-2); }
+.flag.bad { border-color: var(--crit); color: var(--text); }
+.charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+.chart-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.chart-head h2 { margin: 0; }
+.chart-head .hint { font-size: 12px; color: var(--text-3); }
+.chart-wrap { position: relative; margin-top: 6px; }
+svg { display: block; width: 100%; height: auto; }
+svg text { fill: var(--text-2); font-size: 11px; font-family: var(--mono); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 8px; font-size: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.14); display: none; white-space: nowrap; z-index: 2; }
+.tip b { font-family: var(--mono); }
+.bottom { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; }
+.scroll { max-height: 360px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { position: sticky; top: 0; background: var(--surface); text-align: right; color: var(--text-2); font-weight: 600;
+  padding: 4px 6px; border-bottom: 1px solid var(--line); }
+td { text-align: right; padding: 3px 6px; border-bottom: 1px solid var(--grid); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+tr.new { animation: flash 1.2s ease-out; }
+@keyframes flash { from { background: var(--flash); } to { background: transparent; } }
+td .gap { color: var(--crit); font-weight: 700; }
+.feed { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.feed li { display: grid; grid-template-columns: 58px 1fr; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--grid); }
+.feed .t { font-family: var(--mono); color: var(--text-3); }
+.feed .ty { font-family: var(--mono); color: var(--text-3); font-size: 11px; display: block; }
+.feed li.hl span:last-child { font-weight: 600; }
+.empty { color: var(--text-3); font-size: 13px; padding: 18px 0; text-align: center; }
+.err { color: var(--crit); font-size: 13px; }
+.replay { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding: 10px 14px; }
+.replay[hidden] { display: none; }
+.replay input[type=range] { flex: 1; min-width: 160px; accent-color: var(--s-a); }
+#rp-time { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+@media (max-width: 1000px) {
+  .top, .charts, .bottom { grid-template-columns: 1fr; }
+  .nodes { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>WSN · theo dõi trực tiếp</h1>
+    <span class="pill" id="status"><span class="dot"></span><span>…</span></span>
+    <span class="meta" id="meta"></span>
+    <span class="spacer"></span>
+    <span class="seg" id="win" role="group" aria-label="Khoảng thời gian trên biểu đồ">
+      <button data-w="60">1 phút</button><button data-w="300">5 phút</button><button data-w="0">Toàn bộ</button>
+    </span>
+    <label class="meta">Run <select id="run"><option value="">Mới nhất (tự theo)</option></select></label>
+  </header>
+  <div class="replay card" id="replay" hidden>
+    <button id="rp-play" aria-label="Phát lại">▶ Phát lại</button>
+    <label class="meta">Tốc độ <select id="rp-speed">
+      <option value="1">1×</option><option value="5">5×</option><option value="20" selected>20×</option><option value="60">60×</option>
+    </select></label>
+    <input type="range" id="rp-seek" min="0" max="100" step="1" value="0" aria-label="Tua">
+    <span class="meta" id="rp-time">0:00 / 0:00</span>
+    <button id="rp-exit">Xem toàn bộ</button>
+  </div>
+  <div id="error" class="err"></div>
+
+  <div class="top">
+    <section class="card">
+      <h2>Tuyến hiện tại</h2>
+      <svg id="topo" viewBox="0 0 340 220" role="img" aria-label="Sơ đồ tuyến hiện tại"></svg>
+      <div class="meta" style="margin-top:4px">Mũi tên: node con → node cha. Nét đứt: quá 15 s chưa có gói.</div>
+    </section>
+    <div class="nodes" id="nodes"></div>
+  </div>
+
+  <div class="charts" id="charts"></div>
+
+  <div class="bottom">
+    <section class="card">
+      <h2>Từng gói Root nhận (mới nhất trên cùng)</h2>
+      <div class="scroll"><table>
+        <thead><tr><th>Thời điểm</th><th>Node</th><th>seq</th><th>hop</th><th>cha</th><th>cách gói trước</th><th>LDR</th><th>mA</th><th>mV</th><th>cờ</th></tr></thead>
+        <tbody id="pk"></tbody>
+      </table></div>
+    </section>
+    <section class="card">
+      <h2>Sự kiện của Root</h2>
+      <div class="scroll"><ul class="feed" id="feed"></ul></div>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+const NODES = ["A", "B", "C"];
+const COLOR = { A: "var(--s-a)", B: "var(--s-b)", C: "var(--s-c)", R: "var(--s-r)" };
+const POS = { R: [285, 110], A: [175, 38], B: [175, 182], C: [62, 110] };
+const FLAGS = [[1, "FAKE"], [2, "RETRY"], [4, "SENSOR_ERR"], [8, "LOW_POWER"]];
+const HL = new Set(["ROUTE_CHANGE", "DISCONNECTED", "BOOT", "NEW_SESSION", "DOWN_QUEUE_FULL"]);
+const CHARTS = [
+  { id: "gap", axis: "Khoảng cách (ms)", title: "Khoảng cách giữa 2 gói liên tiếp", unit: "ms", hint: "mỗi chấm = 1 gói; vọt lên = trễ hoặc mất gói", dots: true },
+  { id: "rate", axis: "Tốc độ (gói/s)", title: "Tốc độ nhận", unit: "gói/s", hint: "trung bình trượt 10 s, cập nhật theo từng gói" },
+  { id: "rtt", axis: "RTT (ms)", title: "RTT trung bình", unit: "ms", hint: "node tự báo trong gói STATS (~10 s/lần)", dots: true },
+  { id: "rssi", axis: "RSSI (dBm)", title: "RSSI liên kết node → cha", unit: "dBm", hint: "node tự báo", dots: true, free: true },
+  { id: "ldr", axis: "LDR (ADC)", title: "Độ sáng LDR", unit: "ADC", hint: "giá trị cảm biến trong từng gói" },
+  { id: "cur", axis: "Dòng (mA)", title: "Dòng điện (INA219)", unit: "mA", hint: "chỉ có ý nghĩa khi node chạy pin", digits: 1 },
+];
+const $ = (id) => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const mmss = (s) => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
+  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s % 60).padStart(2, "0"); };
+const fmt = (v, d = 0, u = "") => (v === null || v === undefined || Number.isNaN(v) ? "—" : Number(v).toFixed(d) + u);
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+// ---------- trạng thái ----------
+let S = null;            // dữ liệu của run đang xem
+let followLatest = true; // chế độ "mới nhất (tự theo)"
+let winSec = 60;
+let es = null, liveOK = false, buffer = [], loading = false, dirty = true;
+
+function freshState(h) {
+  const st = { run: h.run, running: h.running, t0: Date.parse(h.run.started_at), elapsedAtLoad: h.elapsed_s,
+    loadedAt: Date.now(), seen: new Set(), nodes: {}, pk: [], events: [], rootstats: {} };
+  for (const n of NODES) st.nodes[n] = { pk: [], stats: [], seqs: new Map(), dup: 0, last: null, lastX: null };
+  return st;
+}
+const relNow = () => S.replay ? RP.vt : S.running ? S.elapsedAtLoad + (Date.now() - S.loadedAt) / 1000 : S.elapsedAtLoad;
+
+// ---------- phát lại một run đã xong (để quay video quy trình) ----------
+let H = null;                                            // bản lịch sử đầy đủ của run đang xem
+const RP = { timeline: [], idx: 0, vt: 0, end: 0, playing: false, last: 0 };
+function buildTimeline(h) {
+  const t = [];
+  for (const d of h.data) t.push({ x: d[0], k: "D", a: d });
+  for (const s of h.stats) t.push({ x: s[0], k: "S", a: s });
+  for (const e of h.events) t.push({ x: e[0], k: "E", a: e });
+  return t.sort((p, q) => p.x - q.x);
+}
+function replayFeed() {
+  while (RP.idx < RP.timeline.length && RP.timeline[RP.idx].x <= RP.vt) {
+    const it = RP.timeline[RP.idx++], a = it.a;
+    if (it.k === "D") addData(...a, true);
+    else if (it.k === "S") addStats(...a);
+    else addEvent(a[0], a[1], a[2], a[3]);
+  }
+  dirty = true;
+}
+function replayStart(from, play) {
+  if (!H || H.running) return;
+  followLatest = false;
+  RP.timeline = buildTimeline(H); RP.end = H.elapsed_s;
+  S = freshState(H); S.running = true; S.replay = true;
+  RP.idx = 0; RP.vt = Math.max(0, Math.min(from, RP.end));
+  lastPkCount = -1; lastEv = -1;
+  for (const n of NODES) S.nodes[n].pk.length = 0;
+  replayFeed();
+  RP.playing = play; RP.last = Date.now();
+  $("rp-seek").max = Math.ceil(RP.end);
+  updateReplayUI();
+}
+function replayTick() {
+  if (!S || !S.replay || !RP.playing) return;
+  const now = Date.now();
+  RP.vt += ((now - RP.last) / 1000) * +$("rp-speed").value;
+  RP.last = now;
+  if (RP.vt >= RP.end) { RP.vt = RP.end; RP.playing = false; S.running = false; S.elapsedAtLoad = RP.end; }
+  replayFeed();
+  updateReplayUI();
+}
+function updateReplayUI() {
+  const can = H && !H.running;
+  $("replay").hidden = !can;
+  if (!can) return;
+  const inRp = S && S.replay;
+  $("rp-play").textContent = inRp && RP.playing ? "❚❚ Tạm dừng" : inRp && RP.vt < RP.end ? "▶ Tiếp tục" : "▶ Phát lại";
+  $("rp-exit").hidden = !inRp;
+  $("rp-seek").max = Math.ceil(H.elapsed_s);
+  $("rp-seek").value = inRp ? Math.floor(RP.vt) : 0;
+  $("rp-time").textContent = `${mmss(inRp ? RP.vt : 0)} / ${mmss(H.elapsed_s)}`;
+}
+
+function addData(x, t, node, boot, seq, hop, parent, via, flags, ldr, ix10, vbat, live) {
+  const key = "D|" + t + "|" + node + "|" + seq;
+  if (S.seen.has(key)) return; S.seen.add(key);
+  const N = S.nodes[node]; if (!N) return;
+  const prev = N.last;
+  const gapMs = prev ? (x - prev.x) * 1000 : null;
+  let lost = 0;
+  let set = N.seqs.get(boot);
+  if (!set) { set = { s: new Set(), min: seq, max: seq }; N.seqs.set(boot, set); }
+  if (set.s.has(seq)) N.dup++;
+  else if (prev && prev.boot === boot && seq > prev.seq + 1) lost = seq - prev.seq - 1;
+  set.s.add(seq); set.min = Math.min(set.min, seq); set.max = Math.max(set.max, seq);
+  const p = { x, seq, boot, hop, parent, via, flags, ldr, i: ix10 == null ? null : ix10 / 10, v: vbat, gapMs, lost, node, live };
+  N.pk.push(p); N.last = p;
+  S.pk.push(p);
+}
+function addStats(x, t, node, rtt, retries, qfull, plost, rssi, iavg, gen) {
+  const key = "S|" + t + "|" + node;
+  if (S.seen.has(key)) return; S.seen.add(key);
+  const N = S.nodes[node]; if (!N) return;
+  N.stats.push({ x, rtt, retries, qfull, plost, rssi, iavg, gen });
+}
+function addEvent(x, t, type, e) {
+  const key = "E|" + t + "|" + type + "|" + (e.node || "");
+  if (S.seen.has(key)) return; S.seen.add(key);
+  if (type === "ROOT_STATS") { S.rootstats[e.node] = e; return; }
+  S.events.push({ x, type, e });
+}
+
+function nodeSummary(N) {
+  let uniq = 0, span = 0;
+  for (const b of N.seqs.values()) { uniq += b.s.size; span += b.max - b.min + 1; }
+  return { uniq, missing: Math.max(0, span - uniq), pdr: span ? uniq / span : null };
+}
+
+// ---------- tải lịch sử + luồng trực tiếp ----------
+async function loadRuns() {
+  try {
+    const runs = await (await fetch("/api/runs")).json();
+    const sel = $("run"), cur = sel.value;
+    sel.length = 1;
+    for (const r of runs) {
+      const o = document.createElement("option");
+      o.value = r.run_id; o.textContent = r.run_id + (r.ended_at ? "" : " (đang chạy)");
+      sel.appendChild(o);
+    }
+    sel.value = cur;
+    if (followLatest && runs.length && S && runs[0].run_id !== S.run.run_id) loadHistory();      // run mới bắt đầu
+    if (followLatest && runs.length && S && S.running && runs[0].ended_at && runs[0].run_id === S.run.run_id) {
+      S.running = false; S.elapsedAtLoad = (Date.parse(runs[0].ended_at) - S.t0) / 1000; dirty = true;
+    }
+  } catch (e) { /* thử lại sau */ }
+}
+
+async function loadHistory() {
+  loading = true; buffer = [];
+  const run = $("run").value;
+  try {
+    const h = await (await fetch("/api/history" + (run ? "?run=" + encodeURIComponent(run) : ""))).json();
+    if (h.error) { $("error").textContent = h.error; loading = false; return; }
+    $("error").textContent = "";
+    H = h; RP.playing = false;
+    S = freshState(h);
+    for (const d of h.data) addData(...d, false);
+    for (const s of h.stats) addStats(...s);
+    for (const e of h.events) addEvent(e[0], e[1], e[2], e[3]);
+    for (const n of NODES) S.nodes[n].pk.forEach((p) => (p.live = false));
+  } catch (e) { $("error").textContent = "Không tải được dữ liệu — dashboard.py còn chạy không?"; }
+  loading = false;
+  if (S && S.running) for (const m of buffer) onLive(m);
+  buffer = [];
+  dirty = true;
+  updateReplayUI();
+}
+
+function onLive(m) {
+  if (loading) { buffer.push(m); return; }
+  if (!S || !S.running || S.replay) return;
+  const x = (Date.parse(m.host_ts) - S.t0) / 1000, e = m.e;
+  if (m.kind === "data") addData(x, e.t, e.node, e.boot, e.seq, e.hop, e.parent, e.via, e.flags, e.ldr, e.i_ma_x10, e.vbat_mv, true);
+  else if (m.kind === "stats") addStats(x, e.t, e.node, e.rtt_avg_ms, e.retries, e.qfull, e.parent_lost, e.rssi, e.i_avg_x10, e.gen);
+  else if (m.kind === "event") addEvent(x, e.t, e.type, e);
+  dirty = true;
+}
+
+function connect() {
+  es = new EventSource("/api/stream");
+  es.addEventListener("hello", (ev) => { liveOK = JSON.parse(ev.data).live; dirty = true; });
+  es.onmessage = (ev) => onLive(JSON.parse(ev.data));
+  es.onerror = () => { liveOK = false; dirty = true; };
+}
+
+// ---------- vẽ ----------
+function activeNodes() {
+  const order = (S.run.topology || "").split(" ")[1] || "";
+  const set = new Set(order.split("").filter((c) => NODES.includes(c)));
+  return set.size ? set : new Set(NODES.filter((n) => S.nodes[n].pk.length));
+}
+function eventText(type, e) {
+  switch (type) {
+    case "ROUTE_CHANGE": return `${e.node} đổi cha ${e.from} → ${e.to}`;
+    case "CONNECTED": return `Root nối với ${e.node || e.peer}`;
+    case "DISCONNECTED": return `Mất kết nối ${e.node || ""} (lý do ${e.reason ?? "?"})`;
+    case "BOOT": return `${e.node} khởi động: ${e.topology || ""} ${e.order || ""} ${e.power || ""}`;
+    case "CHILD_READY": return `Con ${e.node} sẵn sàng`;
+    case "NEW_SESSION": return `Phiên mới của ${e.node}`;
+    case "DOWN_QUEUE_FULL": return "Hàng đợi xuống đầy";
+  }
+  return Object.entries(e).filter(([k]) => k !== "t" && k !== "type").slice(0, 4).map(([k, v]) => `${k}=${v}`).join(" ");
+}
+
+function render() {
+  if (!S) return;
+  const now = relNow();
+  const st = $("status");
+  st.classList.toggle("live", S.running && liveOK);
+  st.querySelector(".dot").className = "dot " + (S.running ? (liveOK ? "good" : "warn") : "");
+  if (S.replay) { st.classList.add("live"); st.querySelector(".dot").className = "dot good"; }
+  st.lastElementChild.textContent = S.replay ? `Phát lại ${$("rp-speed").value}× · ${mmss(now)}`
+    : S.running ? `${liveOK ? "Trực tiếp" : "Đang chạy (mất luồng)"} · ${mmss(now)}` : `Đã xong · ${mmss(now)}`;
+  const r = S.run;
+  $("meta").innerHTML = `<b>${esc(r.run_id)}</b> · ${esc(r.topology || "?")} · ${esc(r.power || "?")} · fw ${esc(r.fw || "?")}` +
+    (r.note ? " · " + esc(r.note.split("|")[0]) : "");
+  const act = activeNodes();
+  renderNodes(act, now);
+  renderTopo(act, now);
+  renderCharts(act, now);
+  renderTable();
+  renderFeed();
+}
+
+function freshness(N, now) {
+  if (!S.running) return ["", "đã dừng"];
+  if (!N.last) return ["crit", "chưa có gói"];
+  const age = now - N.last.x;
+  if (age <= 3) return ["good", age.toFixed(1) + " s trước"];
+  if (age <= 15) return ["warn", age.toFixed(0) + " s trước"];
+  return ["crit", "mất " + mmss(age)];
+}
+
+function renderNodes(act, now) {
+  const box = $("nodes");
+  box.innerHTML = "";
+  for (const name of NODES) {
+    const N = S.nodes[name], on = act.has(name) && N.last;
+    const c = document.createElement("section");
+    c.className = "card node" + (on ? "" : " off");
+    const head = `<div class="node-head"><span class="swatch" style="background:${COLOR[name]}"></span><span class="node-name">Node ${name}</span>`;
+    if (!on) { c.innerHTML = head + `</div><div class="empty">${act.has(name) ? "chưa nhận gói nào" : "không có trong topology này"}</div>`; box.appendChild(c); continue; }
+    const [cls, txt] = freshness(N, now);
+    const sm = nodeSummary(N), L = N.last, ls = N.stats[N.stats.length - 1] || {};
+    const rate = N.pk.filter((p) => p.x > now - 10).length / 10;
+    const flags = FLAGS.filter(([b]) => L.flags & b).map(([b, nm]) => `<span class="flag${b === 4 ? " bad" : ""}">${nm}</span>`).join("");
+    c.innerHTML = head + `<span class="fresh"><span class="dot ${cls}"></span>${txt}</span></div>
+      <div class="hero"><div class="big">${sm.pdr === null ? "—" : (sm.pdr * 100).toFixed(sm.pdr === 1 ? 0 : 2) + "%"}<small>PDR</small></div>
+        <div class="big">${S.running ? rate.toFixed(1) : "—"}<small>gói/s</small></div></div>
+      <dl>
+        <dt>Nhận / mất / trùng</dt><dd>${N.pk.length} / ${sm.missing} / ${N.dup}</dd>
+        <dt>seq mới nhất</dt><dd>${L.seq}</dd>
+        <dt>Cha · hop</dt><dd>${esc(L.parent)} · ${L.hop}</dd>
+        <dt>RTT TB</dt><dd>${fmt(ls.rtt, 0, " ms")}</dd>
+        <dt>Retry · queue đầy</dt><dd>${fmt(ls.retries)} · ${fmt(ls.qfull)}</dd>
+        <dt>RSSI</dt><dd>${fmt(ls.rssi || (S.rootstats[name] || {}).rssi, 0, " dBm")}</dd>
+        <dt>LDR · dòng</dt><dd>${fmt(L.ldr)} · ${fmt(L.i, 1, " mA")}</dd>
+        <dt>Điện áp pin</dt><dd>${fmt(L.v, 0, " mV")}</dd>
+      </dl><div class="flags">${flags}</div>`;
+    box.appendChild(c);
+  }
+}
+
+function renderTopo(act, now) {
+  const svg = $("topo");
+  svg.innerHTML = "";
+  const mk = el("marker", { id: "arr", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, el("defs", {}, svg));
+  el("path", { d: "M0,0 L10,5 L0,10 z", fill: "var(--text-2)" }, mk);
+  for (const name of NODES) {
+    const L = S.nodes[name].last;
+    if (!act.has(name) || !L || !POS[L.parent]) continue;
+    const stale = !S.running || now - L.x > 15;
+    const [x1, y1] = POS[name], [x2, y2] = POS[L.parent];
+    const len = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / len, uy = (y2 - y1) / len, r = 24;
+    el("line", { x1: x1 + ux * r, y1: y1 + uy * r, x2: x2 - ux * (r + 3), y2: y2 - uy * (r + 3), stroke: stale ? "var(--text-3)" : "var(--text-2)",
+      "stroke-width": 2, "stroke-dasharray": stale ? "5 4" : "none", "marker-end": "url(#arr)" }, svg);
+  }
+  for (const name of ["R", ...NODES]) {
+    const [x, y] = POS[name], on = name === "R" || act.has(name);
+    const g = el("g", { opacity: on ? 1 : 0.3 }, svg);
+    el("circle", { cx: x, cy: y, r: 21, fill: "var(--surface)", stroke: COLOR[name], "stroke-width": 3 }, g);
+    el("text", { x, y: y + 5, "text-anchor": "middle", style: "font-size:15px;font-weight:700;fill:var(--text)" }, g).textContent = name;
+    const L = S.nodes[name] && S.nodes[name].last;
+    if (name !== "R" && on && L) el("text", { x, y: y + (y > 110 ? -29 : 37), "text-anchor": "middle" }, g).textContent = "hop " + L.hop;
+  }
+}
+
+function buildCharts() {
+  $("charts").innerHTML = CHARTS.map((c) => `<section class="card"><div class="chart-head"><h2>${c.title} (${c.unit})</h2>
+    <span class="hint">${c.hint}</span></div><div class="legend" id="lg-${c.id}"></div>
+    <div class="chart-wrap"><svg id="ch-${c.id}" viewBox="0 0 600 220"></svg><div class="tip" id="tp-${c.id}"></div></div></section>`).join("");
+}
+
+function seriesFor(id, name) {
+  const N = S.nodes[name];
+  switch (id) {
+    case "gap": return N.pk.filter((p) => p.gapMs !== null).map((p) => [p.x, p.gapMs, p]);
+    case "rate": { const out = []; let j = 0; for (let i = 0; i < N.pk.length; i++) { const x = N.pk[i].x; while (N.pk[j].x <= x - 10) j++; out.push([x, (i - j + 1) / Math.min(10, Math.max(x, 1))]); } return out; }
+    case "rtt": return N.stats.filter((s) => s.rtt > 0).map((s) => [s.x, s.rtt]);
+    case "rssi": return N.stats.filter((s) => s.rssi).map((s) => [s.x, s.rssi]);
+    case "ldr": return N.pk.filter((p) => p.ldr !== null).map((p) => [p.x, p.ldr]);
+    case "cur": return N.pk.filter((p) => p.i !== null).map((p) => [p.x, p.i]);
+  }
+  return [];
+}
+
+function renderCharts(act, now) {
+  const names = NODES.filter((n) => act.has(n) && S.nodes[n].pk.length);
+  const x1 = Math.max(now, 10), x0 = winSec ? Math.max(0, x1 - winSec) : 0;
+  for (const c of CHARTS) {
+    $("lg-" + c.id).innerHTML = names.map((n) => `<span><span class="swatch" style="background:${COLOR[n]}"></span>Node ${n}</span>`).join("");
+    const series = names.map((n) => ({ n, pts: seriesFor(c.id, n).filter((p) => p[0] >= x0 - 1 && p[0] <= x1 + 1) }));
+    lineChart($("ch-" + c.id), $("tp-" + c.id), series, x0, x1, c);
+  }
+}
+
+function niceStep(raw) {
+  const p = Math.pow(10, Math.floor(Math.log10(Math.max(raw, 1e-9))));
+  for (const k of [1, 2, 5, 10]) if (k * p >= raw) return k * p;
+  return 10 * p;
+}
+function timeStep(raw) { for (const s of [5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600]) if (s >= raw) return s; return 7200; }
+
+function lineChart(svg, tip, series, x0, x1, cfg) {
+  const W = 600, H = 220, m = { l: 60, r: 14, t: 8, b: 40 };
+  svg.innerHTML = "";
+  const all = series.flatMap((s) => s.pts);
+  if (!all.length) { el("text", { x: W / 2, y: H / 2, "text-anchor": "middle" }, svg).textContent = "chưa có dữ liệu"; return; }
+  let lo = Math.min(...all.map((p) => p[1])), hi = Math.max(...all.map((p) => p[1]));
+  if (!cfg.free) lo = Math.min(0, lo);
+  if (hi === lo) { hi += 1; lo -= cfg.free ? 1 : 0; }
+  const step = niceStep((hi - lo) / 4);
+  lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const X = (t) => m.l + ((t - x0) / (x1 - x0)) * (W - m.l - m.r);
+  const Y = (v) => H - m.b - ((v - lo) / (hi - lo)) * (H - m.t - m.b);
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    el("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = +v.toFixed(2);
+  }
+  const ts = timeStep((x1 - x0) / 6);
+  for (let s = Math.ceil(x0 / ts) * ts; s <= x1; s += ts) el("text", { x: X(s), y: H - 23, "text-anchor": "middle" }, svg).textContent = mmss(s);
+  // tên trục: Ox = thời gian, Oy = đại lượng + đơn vị
+  el("text", { x: (m.l + W - m.r) / 2, y: H - 4, "text-anchor": "middle", style: "fill:var(--text-2);font-weight:600" }, svg).textContent = "Thời gian từ lúc bắt đầu (phút:giây)";
+  el("text", { x: 0, y: 0, "text-anchor": "middle", transform: `translate(13 ${(m.t + H - m.b) / 2}) rotate(-90)`, style: "fill:var(--text-2);font-weight:600" }, svg).textContent = cfg.axis || cfg.unit;
+  const clip = "c" + svg.id;
+  el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b }, el("clipPath", { id: clip }, el("defs", {}, svg)));
+  const g = el("g", { "clip-path": `url(#${clip})` }, svg);
+  for (const s of series) {
+    if (!s.pts.length) continue;
+    el("path", { d: s.pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(""), fill: "none",
+      stroke: COLOR[s.n], "stroke-width": cfg.dots ? 1.2 : 2, "stroke-opacity": cfg.dots ? 0.55 : 1, "stroke-linejoin": "round" }, g);
+    if (cfg.dots && s.pts.length <= 700)
+      for (const p of s.pts) el("circle", { cx: X(p[0]), cy: Y(p[1]), r: p[2] && p[2].lost ? 4.5 : 2.4, fill: p[2] && p[2].lost ? "var(--crit)" : COLOR[s.n] }, g);
+    const last = s.pts[s.pts.length - 1];
+    el("circle", { cx: X(last[0]), cy: Y(last[1]), r: 4, fill: COLOR[s.n], stroke: "var(--surface)", "stroke-width": 2 }, g);
+  }
+  const cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--text-3)", "stroke-width": 1, visibility: "hidden" }, svg);
+  const hit = el("rect", { x: m.l, y: 0, width: W - m.l - m.r, height: H, fill: "transparent" }, svg);
+  hit.addEventListener("mousemove", (ev) => {
+    const box = svg.getBoundingClientRect(), t = x0 + (((ev.clientX - box.left) * (W / box.width) - m.l) / (W - m.l - m.r)) * (x1 - x0);
+    const rows = series.filter((s) => s.pts.length).map((s) => {
+      let b = s.pts[0];
+      for (const p of s.pts) if (Math.abs(p[0] - t) < Math.abs(b[0] - t)) b = p;
+      return [s.n, b];
+    });
+    if (!rows.length) return;
+    cross.setAttribute("x1", X(t)); cross.setAttribute("x2", X(t)); cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `<div style="color:var(--text-3)">t = ${mmss(t)}</div>` + rows.map(([n, p]) =>
+      `<div><span class="swatch" style="background:${COLOR[n]};width:9px;height:9px"></span> ${n}: <b>${Number(p[1]).toFixed(cfg.digits || 0)}</b> ${cfg.unit}` +
+      (p[2] ? ` <span style="color:var(--text-3)">seq ${p[2].seq}${p[2].lost ? ", mất " + p[2].lost + " gói trước" : ""}</span>` : "") + `</div>`).join("");
+    tip.style.display = "block";
+    tip.style.left = Math.max(0, Math.min(ev.clientX - box.left + 12, box.width - tip.offsetWidth - 4)) + "px";
+    tip.style.top = "6px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); });
+}
+
+let lastPkCount = -1, lastRunId = null;
+function renderTable() {
+  if (S.pk.length === lastPkCount && S.run.run_id === lastRunId) return;
+  const fresh = S.run.run_id === lastRunId ? S.pk.length - Math.max(lastPkCount, 0) : 0;
+  lastPkCount = S.pk.length; lastRunId = S.run.run_id;
+  const rows = S.pk.slice(-150).reverse();
+  $("pk").innerHTML = rows.length ? rows.map((p, i) => `<tr class="${i < fresh && p.live ? "new" : ""}">
+    <td>${mmss(p.x)}.${String(Math.floor((p.x % 1) * 10))}</td><td><span class="swatch" style="background:${COLOR[p.node]};width:9px;height:9px"></span> ${p.node}</td>
+    <td>${p.seq}</td><td>${p.hop}</td><td>${esc(p.parent)}</td>
+    <td>${p.gapMs === null ? "—" : Math.round(p.gapMs) + " ms"}${p.lost ? ` <span class="gap">mất ${p.lost}</span>` : ""}</td>
+    <td>${fmt(p.ldr)}</td><td>${fmt(p.i, 1)}</td><td>${fmt(p.v)}</td>
+    <td>${FLAGS.filter(([b]) => p.flags & b).map(([, nm]) => nm).join(" ")}</td></tr>`).join("")
+    : `<tr><td colspan="10" class="empty">chưa có gói</td></tr>`;
+}
+
+let lastEv = -1;
+function renderFeed() {
+  if (S.events.length === lastEv) return;
+  lastEv = S.events.length;
+  const ev = S.events.slice(-80).reverse();
+  $("feed").innerHTML = ev.length ? ev.map((e) => `<li class="${HL.has(e.type) ? "hl" : ""}"><span class="t">${mmss(e.x)}</span>` +
+    `<span><span class="ty">${esc(e.type)}</span>${esc(eventText(e.type, e.e))}</span></li>`).join("") : `<li class="empty">chưa có sự kiện</li>`;
+}
+
+// ---------- điều khiển ----------
+function setWin(w) {
+  winSec = w;
+  for (const b of $("win").querySelectorAll("button")) b.setAttribute("aria-pressed", String(+b.dataset.w === w));
+  dirty = true;
+}
+$("win").addEventListener("click", (ev) => { if (ev.target.dataset.w !== undefined) setWin(+ev.target.dataset.w); });
+$("run").addEventListener("change", () => { followLatest = !$("run").value; lastPkCount = -1; lastEv = -1; setWin(followLatest ? 60 : 0); loadHistory(); });
+
+$("rp-play").addEventListener("click", () => {
+  if (S && S.replay && RP.vt < RP.end) { RP.playing = !RP.playing; RP.last = Date.now(); updateReplayUI(); }
+  else { setWin(300); replayStart(0, true); }
+});
+$("rp-seek").addEventListener("input", () => replayStart(+$("rp-seek").value, S && S.replay ? RP.playing : false));
+$("rp-exit").addEventListener("click", () => { RP.playing = false; setWin(0); loadHistory(); });
+$("rp-speed").addEventListener("change", () => { dirty = true; });
+
+const params = new URLSearchParams(location.search);
+const want = params.get("run");
+if (want) { const o = document.createElement("option"); o.value = want; o.textContent = want; $("run").appendChild(o); $("run").value = want; followLatest = false; }
+setWin(want ? 0 : 60);
+buildCharts();
+if (!new URLSearchParams(location.search).has("nolive")) connect();   // nolive: chỉ để chụp màn hình kiểm tra
+loadRuns();
+loadHistory().then(() => {
+  // ?run=E6&replay=20 : tự phát lại ngay khi mở (tiện quay video)
+  if (params.get("replay") && H && !H.running) {
+    $("rp-speed").value = params.get("replay"); setWin(+(params.get("win") ?? 300)); replayStart(+(params.get("from") || 0), !params.has("pause"));   // pause: đứng yên tại from (chụp khung video)
+  }
+});
+setInterval(loadRuns, 3000);
+let lastFrame = 0;
+setInterval(() => {
+  // vẽ lại tối đa ~6 lần/s khi có gói mới, và 2 lần/s để đồng hồ "x s trước" + cửa sổ trượt chạy đều
+  replayTick();
+  const ts = Date.now();
+  if (S &&((dirty && ts - lastFrame > 160) || (S.running && ts - lastFrame > 500))) {
+    lastFrame = ts; dirty = false;
+    try { render(); } catch (e) { $("error").textContent = "Lỗi vẽ: " + e.message; console.error(e); }
+  }
+}, 80);
+</script>
+</body>
+</html>
