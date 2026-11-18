@@ -1,0 +1,353 @@
+{
+ "run": {
+  "run_id": "E1-mesh-2h-lan2",
+  "started_at": "2026-11-13T21:29:30.427",
+  "ended_at": "2026-11-13T23:29:30.907",
+  "source": "serial",
+  "note": "E1: 1 hop, 30 phút: PDR, ACK RTT | MESH ABC FAST",
+  "topology": "MESH ABC",
+  "power": "FAST",
+  "fw": "a8a5ae2"
+ },
+ "data_period_s": 1.0,
+ "local_data_rows": 7190,
+ "nodes": [
+  {
+   "node": "A",
+   "sessions": 1,
+   "boots": [
+    2304644400
+   ],
+   "generated": 7160,
+   "received": 7160,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.3,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 79.3,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -45.9,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "sessions": 1,
+   "boots": [
+    1176622455
+   ],
+   "generated": 7160,
+   "received": 7160,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.3,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 80.3,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -43.6,
+   "vbat_mv_avg": 1018.8,
+   "node_rtt": {
+    "n": 7169,
+    "mean": 80.8,
+    "median": 81,
+    "p95": 103,
+    "max": 199
+   }
+  },
+  {
+   "node": "C",
+   "sessions": 1,
+   "boots": [
+    2822828263
+   ],
+   "generated": 7150,
+   "received": 7150,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.2,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 80.5,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -43.2,
+   "vbat_mv_avg": 1006.7,
+   "node_rtt": {
+    "n": 7161,
+    "mean": 80.9,
+    "median": 81,
+    "p95": 104,
+    "max": 153
+   }
+  }
+ ],
+ "all_sessions": [
+  {
+   "node": "A",
+   "boot": 2304644400,
+   "rx_frames": 7176,
+   "unique": 7176,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 717,
+   "hop": 0,
+   "paths": {
+    "direct": 7176
+   },
+   "parents": {
+    "R": 7176
+   },
+   "fake": false,
+   "window": "10..7170",
+   "generated": 7160,
+   "received": 7160,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 79.3,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -45.9,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "A",
+   "boot": 3561925845,
+   "rx_frames": 3,
+   "unique": 3,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 0,
+   "paths": {
+    "direct": 3
+   },
+   "parents": {
+    "R": 3
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "boot": 1176622455,
+   "rx_frames": 7171,
+   "unique": 7171,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 717,
+   "hop": 0,
+   "paths": {
+    "direct": 7171
+   },
+   "parents": {
+    "R": 7171
+   },
+   "fake": false,
+   "window": "10..7170",
+   "generated": 7160,
+   "received": 7160,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 80.3,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -43.6,
+   "vbat_mv_avg": 1018.8
+  },
+  {
+   "node": "B",
+   "boot": 3990458516,
+   "rx_frames": 19,
+   "unique": 18,
+   "dup": 1,
+   "late": 1,
+   "retry_rx": 4,
+   "ack_test_drop": 0,
+   "stats_rx": 1,
+   "hop": 0,
+   "paths": {
+    "direct": 19
+   },
+   "parents": {
+    "R": 19
+   },
+   "fake": false,
+   "pdr_seq": 94.74,
+   "rtt_avg_ms": 82,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -41,
+   "vbat_mv_avg": 1027.8
+  },
+  {
+   "node": "C",
+   "boot": 2527203591,
+   "rx_frames": 28,
+   "unique": 26,
+   "dup": 2,
+   "late": 0,
+   "retry_rx": 5,
+   "ack_test_drop": 0,
+   "stats_rx": 1,
+   "hop": 0,
+   "paths": {
+    "direct": 28
+   },
+   "parents": {
+    "R": 28
+   },
+   "fake": false,
+   "pdr_seq": 96.3,
+   "rtt_avg_ms": 76,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -41,
+   "vbat_mv_avg": 1013.1
+  },
+  {
+   "node": "C",
+   "boot": 2822828263,
+   "rx_frames": 7163,
+   "unique": 7163,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 716,
+   "hop": 0,
+   "paths": {
+    "direct": 7163
+   },
+   "parents": {
+    "R": 7163
+   },
+   "fake": false,
+   "window": "10..7160",
+   "generated": 7150,
+   "received": 7150,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 119.2,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 80.5,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -43.2,
+   "vbat_mv_avg": 1006.7
+  }
+ ],
+ "totals": {
+  "generated": 21470,
+  "received": 21470,
+  "lost": 0,
+  "dup": 0,
+  "retries": 0,
+  "qfull": 0,
+  "ack_test_drop": 0,
+  "pdr": 100.0
+ },
+ "reconnects": [
+  {
+   "node": "B",
+   "disconnected": "2026-11-13T21:29:53.417",
+   "ready": "2026-11-13T21:30:00.551",
+   "reason": "0x08",
+   "s": 7.13
+  },
+  {
+   "node": "C",
+   "disconnected": "2026-11-13T21:30:01.392",
+   "ready": "2026-11-13T21:30:08.169",
+   "reason": "0x08",
+   "s": 6.78
+  }
+ ],
+ "route_changes": [],
+ "outages": [
+  {
+   "node": "B",
+   "from": "2026-11-13T21:29:32.548",
+   "to": "2026-11-13T21:29:44.719",
+   "gap_s": 12.17
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T21:29:32.323",
+   "to": "2026-11-13T21:29:45.143",
+   "gap_s": 12.82
+  },
+  {
+   "node": "A",
+   "from": "2026-11-13T21:29:32.479",
+   "to": "2026-11-13T21:29:55.219",
+   "gap_s": 22.74
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T21:29:48.569",
+   "to": "2026-11-13T21:30:00.705",
+   "gap_s": 12.14
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T21:29:57.295",
+   "to": "2026-11-13T21:30:08.272",
+   "gap_s": 10.98
+  }
+ ],
+ "event_counts": {
+  "ROOT_STATS": 2156,
+  "ROOT_SUMMARY": 719,
+  "SENSORS": 1,
+  "BOOT": 2,
+  "SCAN_START": 1,
+  "SCAN": 5,
+  "FOUND": 5,
+  "CONNECTED": 5,
+  "CHILD_READY": 5,
+  "DISCONNECTED": 2,
+  "NEW_SESSION": 2
+ },
+ "rx_by_path": {
+  "direct": 21557
+ }
+}

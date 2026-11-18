@@ -1,0 +1,533 @@
+{
+ "run": {
+  "run_id": "E9-lan3",
+  "started_at": "2026-11-13T02:15:06.386",
+  "ended_at": "2026-11-13T02:28:06.767",
+  "source": "serial",
+  "note": "E9: MESH tự chọn đường: Root chặn node (giả lập ở xa) -> node đi vòng qua node khác | MESH ABC FAST",
+  "topology": "MESH ABC",
+  "power": "FAST",
+  "fw": "624f4f9"
+ },
+ "data_period_s": 1.0,
+ "local_data_rows": 769,
+ "nodes": [
+  {
+   "node": "A",
+   "sessions": 1,
+   "boots": [
+    967610629
+   ],
+   "generated": 740,
+   "received": 740,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 5,
+   "ack_test_drop": 0,
+   "retries": 9,
+   "qfull": 0,
+   "parent_lost": 2,
+   "duration_min": 12.3,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 96.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -55.1,
+   "vbat_mv_avg": null,
+   "node_rtt": {
+    "n": 757,
+    "mean": 97.2,
+    "median": 93,
+    "p95": 148,
+    "max": 203
+   }
+  },
+  {
+   "node": "B",
+   "sessions": 1,
+   "boots": [
+    1694470408
+   ],
+   "generated": 740,
+   "received": 740,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 4,
+   "ack_test_drop": 0,
+   "retries": 6,
+   "qfull": 0,
+   "parent_lost": 3,
+   "duration_min": 12.3,
+   "pdr": 100.0,
+   "hop": 1,
+   "fake": false,
+   "rtt_avg_ms": 106.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -57.1,
+   "vbat_mv_avg": 996.4,
+   "node_rtt": {
+    "n": 749,
+    "mean": 106.3,
+    "median": 107,
+    "p95": 151,
+    "max": 191
+   }
+  },
+  {
+   "node": "C",
+   "sessions": 2,
+   "boots": [
+    98573280,
+    3224404073
+   ],
+   "generated": 710,
+   "received": 710,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 1,
+   "duration_min": 11.9,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 96.7,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -60.3,
+   "vbat_mv_avg": 988.1,
+   "node_rtt": {
+    "n": 738,
+    "mean": 97.0,
+    "median": 92.0,
+    "p95": 149,
+    "max": 198
+   }
+  }
+ ],
+ "all_sessions": [
+  {
+   "node": "A",
+   "boot": 967610629,
+   "rx_frames": 759,
+   "unique": 759,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 5,
+   "ack_test_drop": 0,
+   "stats_rx": 75,
+   "hop": 0,
+   "paths": {
+    "direct": 490,
+    "relayed": 269
+   },
+   "parents": {
+    "R": 490,
+    "C": 269
+   },
+   "fake": false,
+   "window": "10..750",
+   "generated": 740,
+   "received": 740,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 9,
+   "qfull": 0,
+   "parent_lost": 2,
+   "duration_min": 12.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 96.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -55.1,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "A",
+   "boot": 4034353876,
+   "rx_frames": 2,
+   "unique": 2,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 0,
+   "paths": {
+    "direct": 2
+   },
+   "parents": {
+    "R": 2
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "boot": 467658629,
+   "rx_frames": 19,
+   "unique": 19,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 4,
+   "ack_test_drop": 0,
+   "stats_rx": 1,
+   "hop": 0,
+   "paths": {
+    "relayed": 3,
+    "direct": 16
+   },
+   "parents": {
+    "A": 3,
+    "R": 16
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 127,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -43,
+   "vbat_mv_avg": 996.8
+  },
+  {
+   "node": "B",
+   "boot": 1694470408,
+   "rx_frames": 751,
+   "unique": 751,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 4,
+   "ack_test_drop": 0,
+   "stats_rx": 72,
+   "hop": 1,
+   "paths": {
+    "direct": 367,
+    "relayed": 384
+   },
+   "parents": {
+    "R": 367,
+    "C": 149,
+    "A": 235
+   },
+   "fake": false,
+   "window": "10..750",
+   "generated": 740,
+   "received": 740,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 6,
+   "qfull": 0,
+   "parent_lost": 3,
+   "duration_min": 12.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 106.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -57.1,
+   "vbat_mv_avg": 996.4
+  },
+  {
+   "node": "C",
+   "boot": 98573280,
+   "rx_frames": 353,
+   "unique": 353,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 34,
+   "hop": 1,
+   "paths": {
+    "direct": 118,
+    "relayed": 235
+   },
+   "parents": {
+    "R": 118,
+    "A": 235
+   },
+   "fake": false,
+   "window": "10..350",
+   "generated": 340,
+   "received": 340,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 1,
+   "duration_min": 5.7,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 114.2,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -49.8,
+   "vbat_mv_avg": 988.1
+  },
+  {
+   "node": "C",
+   "boot": 273447668,
+   "rx_frames": 27,
+   "unique": 27,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 4,
+   "ack_test_drop": 0,
+   "stats_rx": 1,
+   "hop": 0,
+   "paths": {
+    "relayed": 3,
+    "direct": 24
+   },
+   "parents": {
+    "A": 3,
+    "R": 24
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 92,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -40,
+   "vbat_mv_avg": 988
+  },
+  {
+   "node": "C",
+   "boot": 3224404073,
+   "rx_frames": 387,
+   "unique": 387,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 38,
+   "hop": 0,
+   "paths": {
+    "direct": 387
+   },
+   "parents": {
+    "R": 387
+   },
+   "fake": false,
+   "window": "10..380",
+   "generated": 370,
+   "received": 370,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 6.2,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 81.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -69.7,
+   "vbat_mv_avg": 988.1
+  }
+ ],
+ "totals": {
+  "generated": 2190,
+  "received": 2190,
+  "lost": 0,
+  "dup": 0,
+  "retries": 15,
+  "qfull": 0,
+  "ack_test_drop": 0,
+  "pdr": 100.0
+ },
+ "reconnects": [
+  {
+   "node": "B",
+   "disconnected": "2026-11-13T02:15:29.254",
+   "ready": "2026-11-13T02:15:36.328",
+   "reason": "0x08",
+   "s": 7.07
+  },
+  {
+   "node": "C",
+   "disconnected": "2026-11-13T02:15:37.180",
+   "ready": "2026-11-13T02:15:44.730",
+   "reason": "0x08",
+   "s": 7.55
+  },
+  {
+   "node": "A",
+   "disconnected": "2026-11-13T02:17:41.779",
+   "ready": "2026-11-13T02:22:16.856",
+   "reason": "0x16",
+   "s": 275.08
+  },
+  {
+   "node": "C",
+   "disconnected": "2026-11-13T02:22:15.321",
+   "ready": "2026-11-13T02:22:16.980",
+   "reason": "0x08",
+   "s": 1.66
+  },
+  {
+   "node": "B",
+   "disconnected": "2026-11-13T02:19:42.324",
+   "ready": "2026-11-13T02:22:17.165",
+   "reason": "0x16",
+   "s": 154.84
+  }
+ ],
+ "route_changes": [
+  {
+   "node": "A",
+   "from": "R",
+   "to": "C",
+   "at": "2026-11-13T02:17:44.726",
+   "seq": 134,
+   "last_old": "2026-11-13T02:17:41.281",
+   "first_new": "2026-11-13T02:17:44.729",
+   "s": 3.45
+  },
+  {
+   "node": "B",
+   "from": "R",
+   "to": "C",
+   "at": "2026-11-13T02:19:45.575",
+   "seq": 247,
+   "last_old": "2026-11-13T02:19:41.877",
+   "first_new": "2026-11-13T02:19:45.580",
+   "s": 3.7
+  },
+  {
+   "node": "A",
+   "from": "C",
+   "to": "R",
+   "at": "2026-11-13T02:22:17.005",
+   "seq": 403,
+   "last_old": "2026-11-13T02:22:10.324",
+   "first_new": "2026-11-13T02:22:17.008",
+   "s": 6.68
+  },
+  {
+   "node": "B",
+   "from": "C",
+   "to": "R",
+   "at": "2026-11-13T02:22:17.315",
+   "seq": 396,
+   "last_old": "2026-11-13T02:22:10.975",
+   "first_new": "2026-11-13T02:22:17.319",
+   "s": 6.34
+  },
+  {
+   "node": "C",
+   "from": "R",
+   "to": "A",
+   "at": "2026-11-13T02:24:15.501",
+   "seq": 118,
+   "last_old": "2026-11-13T02:24:10.828",
+   "first_new": "2026-11-13T02:24:15.504",
+   "s": 4.68
+  },
+  {
+   "node": "B",
+   "from": "R",
+   "to": "A",
+   "at": "2026-11-13T02:24:15.514",
+   "seq": 516,
+   "last_old": "2026-11-13T02:24:10.914",
+   "first_new": "2026-11-13T02:24:15.518",
+   "s": 4.6
+  }
+ ],
+ "outages": [
+  {
+   "node": "C",
+   "from": "2026-11-13T02:15:09.024",
+   "to": "2026-11-13T02:15:20.782",
+   "gap_s": 11.76
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T02:15:08.774",
+   "to": "2026-11-13T02:15:21.007",
+   "gap_s": 12.23
+  },
+  {
+   "node": "A",
+   "from": "2026-11-13T02:15:08.124",
+   "to": "2026-11-13T02:15:28.732",
+   "gap_s": 20.61
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T02:15:24.758",
+   "to": "2026-11-13T02:15:36.483",
+   "gap_s": 11.72
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T02:15:33.032",
+   "to": "2026-11-13T02:15:44.833",
+   "gap_s": 11.8
+  },
+  {
+   "node": "A",
+   "from": "2026-11-13T02:17:41.281",
+   "to": "2026-11-13T02:17:44.729",
+   "gap_s": 3.45
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T02:19:41.877",
+   "to": "2026-11-13T02:19:45.580",
+   "gap_s": 3.7
+  },
+  {
+   "node": "A",
+   "from": "2026-11-13T02:22:10.324",
+   "to": "2026-11-13T02:22:17.008",
+   "gap_s": 6.68
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T02:22:10.425",
+   "to": "2026-11-13T02:22:17.133",
+   "gap_s": 6.71
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T02:22:10.975",
+   "to": "2026-11-13T02:22:17.319",
+   "gap_s": 6.34
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T02:24:10.828",
+   "to": "2026-11-13T02:24:15.504",
+   "gap_s": 4.68
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T02:24:10.914",
+   "to": "2026-11-13T02:24:15.518",
+   "gap_s": 4.6
+  }
+ ],
+ "event_counts": {
+  "SENSORS": 1,
+  "BOOT": 2,
+  "SCAN_START": 1,
+  "SCAN": 9,
+  "FOUND": 8,
+  "CONNECTED": 8,
+  "CHILD_READY": 8,
+  "ROOT_STATS": 228,
+  "ROOT_SUMMARY": 76,
+  "DISCONNECTED": 7,
+  "NEW_SESSION": 3,
+  "DENY": 5,
+  "CHILD_RELEASE": 4,
+  "ROUTE_CHANGE": 6
+ },
+ "rx_by_path": {
+  "relayed": 894,
+  "direct": 1404
+ }
+}

@@ -1,0 +1,213 @@
+{
+ "run": {
+  "run_id": "E7-FAST",
+  "started_at": "2026-11-13T23:43:43.193",
+  "ended_at": "2026-11-14T00:04:43.483",
+  "source": "serial",
+  "note": "E7: FAST vs LOW_POWER (bật pin): dòng TB, PDR, RTT | CHAIN CBA FAST",
+  "topology": "CHAIN CBA",
+  "power": "FAST",
+  "fw": "a8a5ae2"
+ },
+ "data_period_s": 1.0,
+ "local_data_rows": 1261,
+ "nodes": [
+  {
+   "node": "A",
+   "sessions": 1,
+   "boots": [
+    2497883526
+   ],
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 79.4,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -54.3,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "sessions": 1,
+   "boots": [
+    594548814
+   ],
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr": 100.0,
+   "hop": 1,
+   "fake": false,
+   "rtt_avg_ms": 129.5,
+   "i_avg_ma": 33.7,
+   "rssi_avg": -48.0,
+   "vbat_mv_avg": 4051.6
+  },
+  {
+   "node": "C",
+   "sessions": 1,
+   "boots": [
+    2980964061
+   ],
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr": 100.0,
+   "hop": 2,
+   "fake": false,
+   "rtt_avg_ms": 215.0,
+   "i_avg_ma": 35.7,
+   "rssi_avg": -60.1,
+   "vbat_mv_avg": 4101.6
+  }
+ ],
+ "all_sessions": [
+  {
+   "node": "A",
+   "boot": 2497883526,
+   "rx_frames": 1262,
+   "unique": 1262,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 126,
+   "hop": 0,
+   "paths": {
+    "direct": 1262
+   },
+   "parents": {
+    "R": 1262
+   },
+   "fake": false,
+   "window": "70..1320",
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 79.4,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -54.3,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "boot": 594548814,
+   "rx_frames": 1262,
+   "unique": 1262,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 126,
+   "hop": 1,
+   "paths": {
+    "relayed": 1262
+   },
+   "parents": {
+    "A": 1262
+   },
+   "fake": false,
+   "window": "70..1320",
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 129.5,
+   "i_avg_ma": 33.7,
+   "rssi_avg": -48.0,
+   "vbat_mv_avg": 4051.6
+  },
+  {
+   "node": "C",
+   "boot": 2980964061,
+   "rx_frames": 1261,
+   "unique": 1261,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 126,
+   "hop": 2,
+   "paths": {
+    "relayed": 1261
+   },
+   "parents": {
+    "B": 1261
+   },
+   "fake": false,
+   "window": "70..1320",
+   "generated": 1250,
+   "received": 1250,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 20.8,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 215.0,
+   "i_avg_ma": 35.7,
+   "rssi_avg": -60.1,
+   "vbat_mv_avg": 4101.6
+  }
+ ],
+ "totals": {
+  "generated": 3750,
+  "received": 3750,
+  "lost": 0,
+  "dup": 0,
+  "retries": 0,
+  "qfull": 0,
+  "ack_test_drop": 0,
+  "pdr": 100.0
+ },
+ "reconnects": [],
+ "route_changes": [],
+ "outages": [],
+ "event_counts": {
+  "ROOT_STATS": 381,
+  "ROOT_SUMMARY": 127
+ },
+ "rx_by_path": {
+  "direct": 1262,
+  "relayed": 2523
+ }
+}

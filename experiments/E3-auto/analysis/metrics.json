@@ -1,0 +1,470 @@
+{
+ "run": {
+  "run_id": "E3-auto",
+  "started_at": "2026-11-13T00:56:22.120",
+  "ended_at": "2026-11-13T01:06:22.558",
+  "source": "serial",
+  "note": "E3: tắt B 5 s, 3 lần: kết nối lại, mất gói, retry | CHAIN CBA FAST",
+  "topology": "CHAIN CBA",
+  "power": "FAST",
+  "fw": "624f4f9"
+ },
+ "data_period_s": 1.0,
+ "local_data_rows": 589,
+ "nodes": [
+  {
+   "node": "A",
+   "sessions": 1,
+   "boots": [
+    3622701957
+   ],
+   "generated": 560,
+   "received": 560,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 9.3,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 79.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -67.7,
+   "vbat_mv_avg": null,
+   "node_rtt": {
+    "n": 577,
+    "mean": 80.4,
+    "median": 80,
+    "p95": 102,
+    "max": 129
+   }
+  },
+  {
+   "node": "B",
+   "sessions": 4,
+   "boots": [
+    322991450,
+    2832453118,
+    3286654554,
+    4191085725
+   ],
+   "generated": 500,
+   "received": 500,
+   "lost": 0,
+   "dup": 0,
+   "late": 3,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 8.4,
+   "pdr": 100.0,
+   "hop": 1,
+   "fake": false,
+   "rtt_avg_ms": 130.3,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -52.8,
+   "vbat_mv_avg": 1008.9,
+   "node_rtt": {
+    "n": 563,
+    "mean": 130.8,
+    "median": 131,
+    "p95": 153,
+    "max": 197
+   }
+  },
+  {
+   "node": "C",
+   "sessions": 1,
+   "boots": [
+    3687557711
+   ],
+   "generated": 550,
+   "received": 548,
+   "lost": 2,
+   "dup": 3,
+   "late": 0,
+   "retry_rx": 13,
+   "ack_test_drop": 0,
+   "retries": 25,
+   "qfull": 0,
+   "parent_lost": 3,
+   "duration_min": 9.2,
+   "pdr": 99.64,
+   "hop": 2,
+   "fake": false,
+   "rtt_avg_ms": 182.2,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -61.3,
+   "vbat_mv_avg": 990.3,
+   "node_rtt": {
+    "n": 558,
+    "mean": 182.8,
+    "median": 181.0,
+    "p95": 204,
+    "max": 296
+   }
+  }
+ ],
+ "all_sessions": [
+  {
+   "node": "A",
+   "boot": 1241202295,
+   "rx_frames": 2,
+   "unique": 2,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 0,
+   "paths": {
+    "direct": 2
+   },
+   "parents": {
+    "R": 2
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "A",
+   "boot": 3622701957,
+   "rx_frames": 579,
+   "unique": 579,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 57,
+   "hop": 0,
+   "paths": {
+    "direct": 579
+   },
+   "parents": {
+    "R": 579
+   },
+   "fake": false,
+   "window": "10..570",
+   "generated": 560,
+   "received": 560,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 9.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 79.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -67.7,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "boot": 322991450,
+   "rx_frames": 126,
+   "unique": 126,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 12,
+   "hop": 1,
+   "paths": {
+    "relayed": 126
+   },
+   "parents": {
+    "A": 126
+   },
+   "fake": false,
+   "window": "10..120",
+   "generated": 110,
+   "received": 110,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 1.8,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 129.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -52.9,
+   "vbat_mv_avg": 1009.8
+  },
+  {
+   "node": "B",
+   "boot": 1204846476,
+   "rx_frames": 3,
+   "unique": 3,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 1,
+   "paths": {
+    "relayed": 3
+   },
+   "parents": {
+    "A": 3
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": 1010.7
+  },
+  {
+   "node": "B",
+   "boot": 2832453118,
+   "rx_frames": 148,
+   "unique": 148,
+   "dup": 0,
+   "late": 3,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 14,
+   "hop": 1,
+   "paths": {
+    "relayed": 148
+   },
+   "parents": {
+    "A": 148
+   },
+   "fake": false,
+   "window": "10..140",
+   "generated": 130,
+   "received": 130,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 2.2,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 130.9,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -54.1,
+   "vbat_mv_avg": 1008.5
+  },
+  {
+   "node": "B",
+   "boot": 3286654554,
+   "rx_frames": 143,
+   "unique": 143,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 14,
+   "hop": 1,
+   "paths": {
+    "relayed": 143
+   },
+   "parents": {
+    "A": 143
+   },
+   "fake": false,
+   "window": "10..140",
+   "generated": 130,
+   "received": 130,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 2.2,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 130.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -53.1,
+   "vbat_mv_avg": 1008.1
+  },
+  {
+   "node": "B",
+   "boot": 4191085725,
+   "rx_frames": 148,
+   "unique": 148,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 14,
+   "hop": 1,
+   "paths": {
+    "relayed": 148
+   },
+   "parents": {
+    "A": 148
+   },
+   "fake": false,
+   "window": "10..140",
+   "generated": 130,
+   "received": 130,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 2.2,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 130.4,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -51,
+   "vbat_mv_avg": 1009.2
+  },
+  {
+   "node": "C",
+   "boot": 3021510564,
+   "rx_frames": 3,
+   "unique": 3,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 1,
+   "paths": {
+    "relayed": 3
+   },
+   "parents": {
+    "A": 3
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": 990.7
+  },
+  {
+   "node": "C",
+   "boot": 3687557711,
+   "rx_frames": 564,
+   "unique": 561,
+   "dup": 3,
+   "late": 0,
+   "retry_rx": 13,
+   "ack_test_drop": 0,
+   "stats_rx": 53,
+   "hop": 2,
+   "paths": {
+    "relayed": 564
+   },
+   "parents": {
+    "B": 564
+   },
+   "fake": false,
+   "window": "10..560",
+   "generated": 550,
+   "received": 548,
+   "lost": 2,
+   "pdr": 99.64,
+   "retries": 25,
+   "qfull": 0,
+   "parent_lost": 3,
+   "duration_min": 9.2,
+   "pdr_seq": 99.64,
+   "rtt_avg_ms": 182.2,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -61.3,
+   "vbat_mv_avg": 990.3
+  }
+ ],
+ "totals": {
+  "generated": 1610,
+  "received": 1608,
+  "lost": 2,
+  "dup": 3,
+  "retries": 25,
+  "qfull": 0,
+  "ack_test_drop": 0,
+  "pdr": 99.88
+ },
+ "reconnects": [],
+ "route_changes": [],
+ "outages": [
+  {
+   "node": "A",
+   "from": "2026-11-13T00:56:23.956",
+   "to": "2026-11-13T00:56:44.441",
+   "gap_s": 20.48
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T00:56:24.606",
+   "to": "2026-11-13T00:56:52.241",
+   "gap_s": 27.64
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T00:56:24.806",
+   "to": "2026-11-13T00:57:00.440",
+   "gap_s": 35.63
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T00:58:57.084",
+   "to": "2026-11-13T00:59:02.996",
+   "gap_s": 5.91
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T00:58:56.684",
+   "to": "2026-11-13T00:59:03.015",
+   "gap_s": 6.33
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T01:01:27.027",
+   "to": "2026-11-13T01:01:32.825",
+   "gap_s": 5.8
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T01:01:26.675",
+   "to": "2026-11-13T01:01:32.838",
+   "gap_s": 6.16
+  },
+  {
+   "node": "B",
+   "from": "2026-11-13T01:03:56.818",
+   "to": "2026-11-13T01:04:02.619",
+   "gap_s": 5.8
+  },
+  {
+   "node": "C",
+   "from": "2026-11-13T01:03:57.020",
+   "to": "2026-11-13T01:04:02.628",
+   "gap_s": 5.61
+  }
+ ],
+ "event_counts": {
+  "SENSORS": 1,
+  "BOOT": 2,
+  "SCAN_START": 1,
+  "FOUND": 1,
+  "CONNECTED": 1,
+  "CHILD_READY": 1,
+  "ROOT_STATS": 171,
+  "ROOT_SUMMARY": 58,
+  "NEW_SESSION": 3
+ },
+ "rx_by_path": {
+  "relayed": 1132,
+  "direct": 581
+ }
+}

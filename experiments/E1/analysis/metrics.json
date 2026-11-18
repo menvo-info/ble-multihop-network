@@ -1,0 +1,189 @@
+{
+ "run": {
+  "run_id": "E1",
+  "started_at": "2026-11-12T23:16:43.617",
+  "ended_at": "2026-11-12T23:47:43.707",
+  "source": "serial",
+  "note": "E1: 1 hop, 30 phút: PDR, ACK RTT | PAIR A FAST",
+  "topology": "PAIR A",
+  "power": "FAST",
+  "fw": "9e034a2"
+ },
+ "data_period_s": 1.0,
+ "local_data_rows": 1849,
+ "nodes": [
+  {
+   "node": "A",
+   "sessions": 1,
+   "boots": [
+    3325855699
+   ],
+   "generated": 1820,
+   "received": 1820,
+   "lost": 0,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 30.3,
+   "pdr": 100.0,
+   "hop": 0,
+   "fake": false,
+   "rtt_avg_ms": 79.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -60.7,
+   "vbat_mv_avg": null,
+   "node_rtt": {
+    "n": 1836,
+    "mean": 79.5,
+    "median": 79.0,
+    "p95": 102,
+    "max": 154
+   }
+  }
+ ],
+ "all_sessions": [
+  {
+   "node": "A",
+   "boot": 2009357395,
+   "rx_frames": 2,
+   "unique": 2,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 0,
+   "paths": {
+    "direct": 2
+   },
+   "parents": {
+    "R": 2
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "A",
+   "boot": 3325855699,
+   "rx_frames": 1839,
+   "unique": 1839,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 183,
+   "hop": 0,
+   "paths": {
+    "direct": 1839
+   },
+   "parents": {
+    "R": 1839
+   },
+   "fake": false,
+   "window": "10..1830",
+   "generated": 1820,
+   "received": 1820,
+   "lost": 0,
+   "pdr": 100.0,
+   "retries": 0,
+   "qfull": 0,
+   "parent_lost": 0,
+   "duration_min": 30.3,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 79.1,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -60.7,
+   "vbat_mv_avg": null
+  },
+  {
+   "node": "B",
+   "boot": 2932838731,
+   "rx_frames": 3,
+   "unique": 3,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 0,
+   "hop": 1,
+   "paths": {
+    "relayed": 3
+   },
+   "parents": {
+    "A": 3
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": null,
+   "i_avg_ma": null,
+   "rssi_avg": null,
+   "vbat_mv_avg": 1008
+  },
+  {
+   "node": "C",
+   "boot": 466540051,
+   "rx_frames": 3,
+   "unique": 3,
+   "dup": 0,
+   "late": 0,
+   "retry_rx": 0,
+   "ack_test_drop": 0,
+   "stats_rx": 1,
+   "hop": 2,
+   "paths": {
+    "relayed": 3
+   },
+   "parents": {
+    "B": 3
+   },
+   "fake": false,
+   "pdr_seq": 100.0,
+   "rtt_avg_ms": 183,
+   "i_avg_ma": 0.0,
+   "rssi_avg": -55,
+   "vbat_mv_avg": 993.3
+  }
+ ],
+ "totals": {
+  "generated": 1820,
+  "received": 1820,
+  "lost": 0,
+  "dup": 0,
+  "retries": 0,
+  "qfull": 0,
+  "ack_test_drop": 0,
+  "pdr": 100.0
+ },
+ "reconnects": [],
+ "route_changes": [],
+ "outages": [
+  {
+   "node": "A",
+   "from": "2026-11-12T23:16:45.110",
+   "to": "2026-11-12T23:17:05.756",
+   "gap_s": 20.65
+  }
+ ],
+ "event_counts": {
+  "SENSORS": 1,
+  "BOOT": 2,
+  "SCAN_START": 1,
+  "FOUND": 1,
+  "CONNECTED": 1,
+  "CHILD_READY": 1,
+  "ROOT_STATS": 184,
+  "ROOT_SUMMARY": 184
+ },
+ "rx_by_path": {
+  "relayed": 6,
+  "direct": 1841
+ }
+}
