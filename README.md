@@ -118,6 +118,12 @@ Keeping a BLE connection open costs about 35 mA, which is roughly two days on an
 - Per node: LDR voltage divider (GP28/ADC2), INA219 current sensor (I2C1 on GP26/GP27, address 0x40), 18650 cell with a TP4056 charger, switch, 1N5819 diode into VSYS
 - Wiring diagrams (Vietnamese): [perfboard layout](docs/mach-duc-lo.html), [enclosure wiring](docs/so-do-day-hop-node.html)
 
+| Assembled sensor node | Perfboard layout |
+|---|---|
+| ![Assembled node: Pico 2 W, INA219, TP4056 charger, 18650 cell, LDR and status LEDs on perfboard](docs/images/node-hardware.jpg) | ![Perfboard layout: 3V3 bus on row 1, GND bus on row 24, battery path through switch, INA219 and 1N5819 into VSYS](docs/images/perfboard-layout.png) |
+
+The battery path is TP4056 OUT+ → switch → INA219 VIN+ → VIN− → 1N5819 → VSYS, so the INA219 measures the whole node's current and the diode keeps USB power from back-feeding the cell.
+
 ## Repository structure
 
 ```text
